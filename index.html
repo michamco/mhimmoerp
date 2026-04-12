@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MHIMMOBILIEN ERP</title>
+    <link rel="icon" type="image/png" href="IMG_4591.png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -15,15 +16,20 @@
             --border-color: #d9d9d9;
         }
 
-        body { background-color: var(--sap-bg); font-family: Arial, sans-serif; margin: 0; padding: 0; color: var(--text-color); }
+        body { 
+            background-color: var(--sap-bg); 
+            font-family: Arial, sans-serif; 
+            margin: 0; padding: 0; color: var(--text-color);
+        }
 
         /* LOGIN SCREEN */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--sap-shell); }
         .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; width: 320px; transition: transform 0.2s; }
-        .login-box img { width: 150px; margin-bottom: 20px; }
+        .login-box img { width: 180px; margin-bottom: 20px; }
         .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 16px; }
         .login-box button { width: 100%; padding: 12px; background: var(--sap-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
         
+        /* Shake Animation für falschen Login */
         .shake { animation: shakeAnim 0.4s ease-in-out; border: 2px solid #dc3545; }
         @keyframes shakeAnim {
             0%, 100% { transform: translateX(0); }
@@ -36,25 +42,35 @@
         header { background: var(--sap-shell); height: 48px; display: flex; align-items: center; padding: 0 20px; color: white; justify-content: space-between; }
         .header-logo { height: 32px; filter: brightness(0) invert(1); }
 
-        .launchpad { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
-        .tile { background: var(--card-bg); padding: 16px; height: 120px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; color: inherit; transition: 0.2s; }
+        .launchpad { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
+        .tile { 
+            background: var(--card-bg); padding: 16px; height: 130px; cursor: pointer; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px;
+            display: flex; flex-direction: column; justify-content: space-between; 
+            text-decoration: none; color: inherit; transition: 0.2s;
+        }
         .tile:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-bottom: 4px solid var(--sap-blue); }
-        .tile h3 { font-size: 0.95rem; margin: 0; color: var(--sap-blue); }
-        .tile-icon { font-size: 1.8rem; align-self: flex-end; }
+        .tile h3 { font-size: 1rem; margin: 0; color: var(--sap-blue); font-weight: 600; }
+        .tile-icon { font-size: 2rem; align-self: flex-end; opacity: 0.8; }
 
         /* APP CONTAINER */
         #app-container { display: none; padding: 20px; max-width: 1100px; margin: 20px auto; }
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .rechner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .section-box { border: 1px solid #eee; padding: 15px; border-radius: 6px; margin-bottom: 10px; background: #fafafa; }
-        .section-box h3 { margin-top: 0; font-size: 1rem; color: var(--sap-blue); border-bottom: 1px solid #ddd; padding-bottom: 5px; }
         
-        label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #666; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; margin-bottom: 10px; font-size: 1rem; }
+        /* Rechner Layouts */
+        .rechner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .section-box { border: 1px solid #eee; padding: 20px; border-radius: 6px; margin-bottom: 15px; background: #fafafa; }
+        .section-box h3 { margin-top: 0; font-size: 1.1rem; color: var(--sap-blue); border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 15px; }
+        
+        label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: #666; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; margin-bottom: 15px; font-size: 1rem; }
+        input:focus, textarea:focus { outline: none; border-color: var(--sap-blue); }
         
         .result-panel { background: #eef6ff; padding: 20px; border-radius: 6px; text-align: center; border-left: 5px solid var(--sap-blue); margin-top: 15px; font-size: 1.2rem; }
-        .btn-action { background: var(--sap-blue); color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-action { background: var(--sap-blue); color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
+        .btn-action:hover { background: #005bc4; }
 
+        /* BRIEF PREVIEW */
         #brief-preview { display: none; margin-top: 30px; padding: 60px; background: white; border: 1px solid #ddd; min-height: 800px; }
         
         @media print {
@@ -70,51 +86,57 @@
 
     <div id="login-screen">
         <div class="login-box" id="loginBox">
-            <img src="IMG_4590.png" alt="Logo" onerror="this.style.display='none'">
-            <h2 style="margin-bottom: 20px; color: #354a5f;">ERP Login</h2>
+            <img src="IMG_4590.png" alt="MHIMMOBILIEN Logo" onerror="this.style.display='none'">
+            <h2 style="margin-bottom: 20px; color: var(--sap-shell);">ERP Login</h2>
             <input type="text" id="user" placeholder="Benutzername">
             <input type="password" id="pass" placeholder="Passwort">
             <button onclick="checkLogin()">Anmelden</button>
-            <p id="login-err" style="color:red; display:none; margin-top:15px; font-size: 0.85rem;">Fehlerhafte Daten!</p>
+            <p id="login-err" style="color:#dc3545; display:none; margin-top:15px; font-size: 0.9rem; font-weight:bold;">Login fehlgeschlagen!</p>
         </div>
     </div>
 
     <div id="main-ui" style="display:none;">
         <header>
             <div style="display:flex; align-items:center;">
-                <img src="IMG_4590.png" class="header-logo" onerror="this.style.display='none'">
-                <span style="margin-left:15px; font-weight:bold;">MHIMMOBILIEN ERP</span>
+                <img src="IMG_4590.png" class="header-logo" alt="Logo" onerror="this.style.display='none'">
+                <span style="margin-left:15px; font-weight:bold; font-size: 1.1rem; letter-spacing: 1px;">MHIMMOBILIEN ERP</span>
             </div>
-            <button onclick="location.reload()" style="background:none; border:1px solid white; color:white; border-radius:4px; cursor:pointer; padding:4px 12px;">Abmelden</button>
+            <button onclick="location.reload()" style="background:transparent; border:1px solid white; color:white; border-radius:4px; cursor:pointer; padding:6px 15px; font-weight:bold;">Abmelden</button>
         </header>
 
         <div id="launchpad" class="launchpad">
+            <a href="https://versteigerungspool.de/amtsgerichte/ludwigshafen.34341" target="_blank" class="tile"><h3>ZVG Ludwigshafen</h3><div class="tile-icon">🏛️</div></a>
+            <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Frankenthal</h3><div class="tile-icon">🏛️</div></a>
+            <a href="https://versteigerungspool.de/amtsgerichte/mannheim.2739/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Mannheim</h3><div class="tile-icon">🏛️</div></a>
+            <a href="https://baufinanzierung.check24.de/baufinanzierung/immobilienbewertung?deviceoutput=desktop" target="_blank" class="tile"><h3>Immo-Bewertung</h3><div class="tile-icon">📈</div></a>
+            
             <div class="tile" onclick="openApp('fixflip')"><h3>Fix & Flip Rechner</h3><div class="tile-icon">🛠️</div></div>
             <div class="tile" onclick="openApp('kredit')"><h3>Kreditrechner</h3><div class="tile-icon">💶</div></div>
             <div class="tile" onclick="openApp('miete')"><h3>Mietrechner</h3><div class="tile-icon">📊</div></div>
             <div class="tile" onclick="openApp('bestand')"><h3>Immobilienbestand</h3><div class="tile-icon">🏢</div></div>
             <div class="tile" onclick="openApp('brief')"><h3>Brief Generator</h3><div class="tile-icon">✉️</div></div>
+            <div class="tile" onclick="openApp('checklisten')"><h3>Checklisten</h3><div class="tile-icon">📋</div></div>
         </div>
 
         <div id="app-container">
-            <button class="no-print" style="margin-bottom:15px; padding:8px 15px; cursor:pointer; background:#eee; border:1px solid #ccc; border-radius:4px;" onclick="closeApp()">⬅ Zurück</button>
+            <button class="no-print" style="margin-bottom:20px; padding:10px 20px; cursor:pointer; background:#6a6d70; color:white; border:none; border-radius:4px; font-weight:bold;" onclick="closeApp()">⬅ Zurück zum Launchpad</button>
             <div id="app-content" class="card"></div>
         </div>
     </div>
 
     <script>
-        // Supabase sicher initialisieren
-        let supabase = null;
+        // 1. Supabase Setup (mit umbenannter Variable wegen Namenskonflikt!)
+        let supabaseClient = null;
         try {
             const supabaseUrl = 'https://dofofjbjgbmpxjtlolzi.supabase.co';
             const supabaseKey = 'sb_publishable_grgVSWN2j2zPAWGq_-qUug_yzc0QGV-';
-            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
         } catch(e) {
-            console.error("Supabase konnte nicht geladen werden:", e);
+            console.error("Datenbankverbindung fehlgeschlagen:", e);
         }
 
+        // 2. Login Funktion
         function checkLogin() {
-            // Trim() entfernt unsichtbare Leerzeichen, toLowerCase() ignoriert Groß/Kleinschreibung
             const u = document.getElementById('user').value.trim().toLowerCase();
             const p = document.getElementById('pass').value.trim();
             const box = document.getElementById('loginBox');
@@ -125,22 +147,32 @@
                 document.getElementById('main-ui').style.display = 'block';
             } else {
                 box.classList.remove('shake');
-                void box.offsetWidth; 
+                void box.offsetWidth; // Neustart der Animation erzwingen
                 box.classList.add('shake');
                 err.style.display = 'block';
             }
         }
 
+        // Login per Enter-Taste
+        document.getElementById('pass').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkLogin();
+        });
+
+        // 3. Navigation
         function openApp(id) {
             document.getElementById('launchpad').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
             const content = document.getElementById('app-content');
-            
-            if(id === 'fixflip') renderFixFlip(content);
-            if(id === 'kredit') renderKredit(content);
-            if(id === 'miete') renderMietrechner(content);
-            if(id === 'bestand') renderBestand(content);
-            if(id === 'brief') renderBrief(content);
+            content.innerHTML = '';
+
+            switch(id) {
+                case 'fixflip': renderFixFlip(content); break;
+                case 'kredit': renderKredit(content); break;
+                case 'miete': renderMietrechner(content); break;
+                case 'bestand': renderBestand(content); break;
+                case 'brief': renderBrief(content); break;
+                case 'checklisten': renderChecklisten(content); break;
+            }
         }
 
         function closeApp() {
@@ -150,50 +182,236 @@
 
         const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
 
+        // --- APP: FIX & FLIP ---
         function renderFixFlip(container) {
-            container.innerHTML = '<h2>Fix & Flip</h2><div class="rechner-grid"><div class="section-box"><label>Kaufpreis</label><input type="number" id="kp" value="150000" oninput="calcFF()"><label>Sanierung</label><input type="number" id="san" value="25000" oninput="calcFF()"></div><div class="section-box"><label>Verkauf</label><input type="number" id="vk" value="220000" oninput="calcFF()"></div></div><div id="ff_r" class="result-panel"></div>';
+            container.innerHTML = `
+                <h2 style="color: var(--sap-shell);">Fix & Flip Analyse</h2>
+                <div class="rechner-grid">
+                    <div class="section-box">
+                        <h3>1. Ankauf & Nebenkosten</h3>
+                        <label>Kaufpreis (€)</label><input type="number" id="ff_kp" value="150000" oninput="calcFF()">
+                        <label>Wohnfläche (qm)</label><input type="number" id="ff_qm" value="70" oninput="calcFF()">
+                        <label>Grunderwerbsteuer (%)</label><input type="number" id="ff_st" value="5.0" step="0.1" oninput="calcFF()">
+                        <label>Notar & Makler (%)</label><input type="number" id="ff_ma" value="5.07" step="0.01" oninput="calcFF()">
+                    </div>
+                    <div class="section-box">
+                        <h3>2. Sanierung & Finanzierung</h3>
+                        <label>Sanierungskosten (€)</label><input type="number" id="ff_san" value="25000" oninput="calcFF()">
+                        <label>Finanzierungskosten (€)</label><input type="number" id="ff_fin" value="5000" oninput="calcFF()">
+                        <label>Laufende NK während Haltedauer (€)</label><input type="number" id="ff_nk" value="1500" oninput="calcFF()">
+                    </div>
+                    <div class="section-box">
+                        <h3>3. Verkauf</h3>
+                        <label>Ziel Verkaufspreis (€/qm)</label><input type="number" id="ff_vkqm" value="3800" oninput="calcFF()">
+                    </div>
+                </div>
+                <div id="ff_res" class="result-panel">Berechne...</div>
+            `;
             calcFF();
         }
+
         function calcFF() {
-            const gewinn = getVal('vk') - getVal('kp') - getVal('san');
-            document.getElementById('ff_r').innerHTML = 'Gewinn: <b>' + gewinn + ' €</b>';
+            const kp = getVal('ff_kp');
+            const nkProzent = (getVal('ff_st') + getVal('ff_ma')) / 100;
+            const kaufNK = kp * nkProzent;
+            
+            const investGesamt = kp + kaufNK + getVal('ff_san') + getVal('ff_fin') + getVal('ff_nk');
+            const erloes = getVal('ff_qm') * getVal('ff_vkqm');
+            
+            const gewinn = erloes - investGesamt;
+            const marge = erloes > 0 ? (gewinn / erloes) * 100 : 0;
+            
+            const resBox = document.getElementById('ff_res');
+            resBox.innerHTML = `Erwarteter Gewinn: <b>${gewinn.toLocaleString('de-DE')} €</b> <br> Marge vom Verkaufspreis: <b>${marge.toFixed(2)} %</b>`;
+            
+            if (marge >= 25) { resBox.style.borderLeftColor = '#28a745'; resBox.style.background = '#d4edda'; resBox.style.color = '#155724'; }
+            else if (marge >= 20) { resBox.style.borderLeftColor = '#ffc107'; resBox.style.background = '#fff3cd'; resBox.style.color = '#856404'; }
+            else { resBox.style.borderLeftColor = '#dc3545'; resBox.style.background = '#f8d7da'; resBox.style.color = '#721c24'; }
         }
 
+        // --- APP: KREDITRECHNER ---
         function renderKredit(container) {
-            container.innerHTML = '<h2>Kredit</h2><div class="section-box"><label>Darlehen</label><input type="number" id="kd" value="200000" oninput="calcK()"><label>Zins+Tilgung %</label><input type="number" id="kz" value="5.5" oninput="calcK()"></div><div id="k_r" class="result-panel"></div>';
-            calcK();
-        }
-        function calcK() {
-            const rate = (getVal('kd') * (getVal('kz')/100)) / 12;
-            document.getElementById('k_r').innerHTML = 'Rate mtl.: <b>' + rate.toFixed(2) + ' €</b>';
+            container.innerHTML = `
+                <h2 style="color: var(--sap-shell);">Annuitätendarlehen</h2>
+                <div class="section-box" style="max-width: 600px; margin: 0 auto;">
+                    <label>Darlehensbetrag (€)</label><input type="number" id="kr_d" value="200000" oninput="calcKr()">
+                    <label>Sollzins p.a. (%)</label><input type="number" id="kr_z" value="3.5" step="0.1" oninput="calcKr()">
+                    <label>Anfängliche Tilgung p.a. (%)</label><input type="number" id="kr_t" value="2.0" step="0.1" oninput="calcKr()">
+                </div>
+                <div id="kr_res" class="result-panel" style="max-width: 600px; margin: 20px auto;"></div>
+            `;
+            calcKr();
         }
 
+        function calcKr() {
+            const zins = getVal('kr_z');
+            const tilg = getVal('kr_t');
+            const rate = (getVal('kr_d') * ((zins + tilg) / 100)) / 12;
+            document.getElementById('kr_res').innerHTML = `Monatliche Rate: <b style="font-size:1.5rem;">${rate.toFixed(2)} €</b>`;
+        }
+
+        // --- APP: MIETRECHNER ---
         function renderMietrechner(container) {
-            container.innerHTML = '<h2>Miete</h2><div class="section-box"><label>Kaltmiete</label><input type="number" id="mk" value="850" oninput="calcM()"><label>Bankrate</label><input type="number" id="mb" value="500" oninput="calcM()"></div><div id="m_r" class="result-panel"></div>';
+            container.innerHTML = `
+                <h2 style="color: var(--sap-shell);">Miet-Cashflow</h2>
+                <div class="section-box" style="max-width: 600px; margin: 0 auto;">
+                    <label>Erwartete Kaltmiete (€/Monat)</label><input type="number" id="m_kalt" value="850" oninput="calcM()">
+                    <label>Monatliche Bankrate (€)</label><input type="number" id="m_bank" value="500" oninput="calcM()">
+                    <label>Hausgeld gesamt (€)</label><input type="number" id="m_hg" value="250" oninput="calcM()">
+                    <label>Davon auf Mieter umlagefähig (€)</label><input type="number" id="m_um" value="180" oninput="calcM()">
+                </div>
+                <div id="m_res" class="result-panel" style="max-width: 600px; margin: 20px auto;"></div>
+            `;
             calcM();
         }
+
         function calcM() {
-            document.getElementById('m_r').innerHTML = 'Cashflow: <b>' + (getVal('mk') - getVal('mb')) + ' €</b>';
+            const nichtUmlagefaehig = getVal('m_hg') - getVal('m_um');
+            const cashflow = getVal('m_kalt') - getVal('m_bank') - nichtUmlagefaehig;
+            
+            const resBox = document.getElementById('m_res');
+            resBox.innerHTML = `Reiner Cashflow: <b style="font-size:1.5rem;">${cashflow.toFixed(2)} €</b> pro Monat`;
+            if(cashflow >= 0) { resBox.style.color = '#155724'; resBox.style.background = '#d4edda'; resBox.style.borderLeftColor = '#28a745'; }
+            else { resBox.style.color = '#721c24'; resBox.style.background = '#f8d7da'; resBox.style.borderLeftColor = '#dc3545'; }
         }
 
+        // --- APP: BESTAND ---
         async function renderBestand(container) {
-            container.innerHTML = '<h2>Bestand</h2><p>Lade...</p>';
-            if(!supabase) { container.innerHTML = 'Datenbank nicht verbunden.'; return; }
-            const { data, error } = await supabase.from('immobilien').select('*');
-            if(error) { container.innerHTML = 'Fehler!'; return; }
-            let t = '<table width="100%"><tr><th align="left">Straße</th><th align="left">Miete</th></tr>';
-            data.forEach(i => t += '<tr><td>'+i.strasse+'</td><td>'+i.kaltmiete+' €</td></tr>');
-            container.innerHTML = '<h2>Bestand</h2>' + t + '</table>';
+            container.innerHTML = '<h2 style="color: var(--sap-shell);">Immobilienbestand</h2><p>Lade Daten aus Supabase...</p>';
+            
+            if(!supabaseClient) { 
+                container.innerHTML = '<div style="color:red; padding:20px;">Datenbankverbindung konnte nicht hergestellt werden.</div>'; 
+                return; 
+            }
+
+            const { data, error } = await supabaseClient.from('immobilien').select('*');
+            
+            if(error) { 
+                container.innerHTML = `<div style="color:red; padding:20px;">Fehler: ${error.message}</div>`; 
+                return; 
+            }
+            
+            let html = `
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; margin-top:20px; font-size:1rem; text-align:left;">
+                        <thead>
+                            <tr style="background:var(--sap-blue); color:white;">
+                                <th style="padding:12px;">Straße</th>
+                                <th style="padding:12px;">Stadt</th>
+                                <th style="padding:12px;">Fläche</th>
+                                <th style="padding:12px;">Kaltmiete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            if(data.length === 0) {
+                html += '<tr><td colspan="4" style="padding:20px; text-align:center;">Keine Immobilien im Bestand gefunden.</td></tr>';
+            } else {
+                data.forEach(i => {
+                    html += `
+                        <tr style="border-bottom:1px solid #ddd; background: white;">
+                            <td style="padding:12px;"><b>${i.strasse}</b></td>
+                            <td style="padding:12px;">${i.stadt}</td>
+                            <td style="padding:12px;">${i.quadratmeter} m²</td>
+                            <td style="padding:12px;">${i.kaltmiete} €</td>
+                        </tr>
+                    `;
+                });
+            }
+            html += '</tbody></table></div>';
+            container.innerHTML = '<h2 style="color: var(--sap-shell);">Immobilienbestand</h2>' + html;
         }
 
+        // --- APP: BRIEF GENERATOR ---
         function renderBrief(container) {
-            container.innerHTML = '<div class="no-print"><h2>Brief</h2><input type="text" id="bn" placeholder="Empfänger"><textarea id="bt" style="height:100px"></textarea><button class="btn-action" onclick="printB()">Drucken</button></div><div id="bp" style="display:none; padding:40px;"></div>';
+            container.innerHTML = `
+                <div class="no-print">
+                    <h2 style="color: var(--sap-shell);">Professioneller Brief-Generator</h2>
+                    <div class="rechner-grid">
+                        <div class="section-box">
+                            <h3>Absender (Vermieter)</h3>
+                            <input type="text" id="b_v_name" placeholder="Vorname Nachname / Firma">
+                            <input type="text" id="b_v_str" placeholder="Straße und Hausnummer">
+                            <input type="text" id="b_v_ort" placeholder="PLZ und Ort">
+                            <input type="text" id="b_v_tel" placeholder="Telefonnummer">
+                            <input type="text" id="b_v_mail" placeholder="E-Mail Adresse">
+                        </div>
+                        <div class="section-box">
+                            <h3>Empfänger (Mieter)</h3>
+                            <input type="text" id="b_m_name" placeholder="Name des Empfängers">
+                            <input type="text" id="b_m_str" placeholder="Straße und Hausnummer">
+                            <input type="text" id="b_m_ort" placeholder="PLZ und Ort">
+                        </div>
+                    </div>
+                    <div class="section-box">
+                        <h3>Inhalt</h3>
+                        <label>Betreff (Fettgedruckt)</label>
+                        <input type="text" id="b_bet" placeholder="z.B. Mieterhöhung / Ankündigung">
+                        <label>Brieftext</label>
+                        <textarea id="b_txt" style="height:200px;" placeholder="Sehr geehrte/r..."></textarea>
+                    </div>
+                    <button class="btn-action" onclick="printBrief()">Brief generieren & Drucken</button>
+                </div>
+                <div id="brief-preview"></div>
+            `;
         }
-        function printB() {
-            const p = document.getElementById('bp');
-            p.style.display = 'block';
-            p.innerHTML = '<h3>An: ' + document.getElementById('bn').value + '</h3><p>' + document.getElementById('bt').value + '</p>';
+
+        function printBrief() {
+            const preview = document.getElementById('brief-preview');
+            preview.style.display = 'block';
+            
+            // Formatierung für DIN A4 Druck (Sichtfenster links, Logo rechts)
+            preview.innerHTML = `
+                <div style="font-family: Arial, sans-serif; color: black; line-height: 1.5; font-size: 11pt;">
+                    <div style="text-align: right;">
+                        <img src="IMG_4590.png" style="width: 220px; margin-bottom: 15px;" onerror="this.style.display='none'"><br>
+                        <strong>${document.getElementById('b_v_name').value}</strong><br>
+                        ${document.getElementById('b_v_str').value}<br>
+                        ${document.getElementById('b_v_ort').value}<br>
+                        Tel: ${document.getElementById('b_v_tel').value}<br>
+                        Mail: ${document.getElementById('b_v_mail').value}
+                    </div>
+                    
+                    <div style="margin-top: 50px; font-size: 8pt; text-decoration: underline; color: #555;">
+                        ${document.getElementById('b_v_name').value} · ${document.getElementById('b_v_str').value} · ${document.getElementById('b_v_ort').value}
+                    </div>
+                    
+                    <div style="margin-top: 15px; min-height: 80px;">
+                        ${document.getElementById('b_m_name').value}<br>
+                        ${document.getElementById('b_m_str').value}<br>
+                        ${document.getElementById('b_m_ort').value}
+                    </div>
+                    
+                    <div style="margin-top: 50px; text-align: right;">
+                        Datum: ${new Date().toLocaleDateString('de-DE')}
+                    </div>
+                    
+                    <div style="margin-top: 40px; font-weight: bold; font-size: 12pt;">
+                        ${document.getElementById('b_bet').value}
+                    </div>
+                    
+                    <div style="margin-top: 30px; white-space: pre-wrap; min-height: 300px;">${document.getElementById('b_txt').value}</div>
+                    
+                    <div style="margin-top: 60px;">
+                        Mit freundlichen Grüßen<br><br><br><br>
+                        ___________________________<br>
+                        ${document.getElementById('b_v_name').value}
+                    </div>
+                </div>
+            `;
             window.print();
+        }
+
+        // --- APP: CHECKLISTEN ---
+        function renderChecklisten(container) {
+            container.innerHTML = `
+                <h2 style="color: var(--sap-shell);">Checklisten & Vorlagen</h2>
+                <div class="section-box" onclick="window.print()" style="cursor:pointer; transition: 0.2s; border-left: 5px solid var(--sap-blue);">
+                    <h3 style="border:none; margin:0;">📋 Wohnungsübergabeprotokoll drucken</h3>
+                    <p style="margin-top:5px; color:#666;">Klicke hier, um eine leere Vorlage mit deinem MHIMMOBILIEN Logo auszudrucken.</p>
+                </div>
+            `;
         }
     </script>
 </body>
