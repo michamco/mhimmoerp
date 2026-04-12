@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MHIMMOBILIEN ERP</title>
-    <link rel="icon" type="image/png" href="IMG_4591.png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -16,11 +15,7 @@
             --border-color: #d9d9d9;
         }
 
-        body { 
-            background-color: var(--sap-bg); 
-            font-family: Arial, sans-serif; 
-            margin: 0; padding: 0; color: var(--text-color);
-        }
+        body { background-color: var(--sap-bg); font-family: Arial, sans-serif; margin: 0; padding: 0; color: var(--text-color); }
 
         /* LOGIN SCREEN */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--sap-shell); }
@@ -29,7 +24,6 @@
         .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 16px; }
         .login-box button { width: 100%; padding: 12px; background: var(--sap-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
         
-        /* Shake Animation für falschen Login */
         .shake { animation: shakeAnim 0.4s ease-in-out; border: 2px solid #dc3545; }
         @keyframes shakeAnim {
             0%, 100% { transform: translateX(0); }
@@ -43,12 +37,7 @@
         .header-logo { height: 32px; filter: brightness(0) invert(1); }
 
         .launchpad { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
-        .tile { 
-            background: var(--card-bg); padding: 16px; height: 120px; cursor: pointer; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px;
-            display: flex; flex-direction: column; justify-content: space-between; 
-            text-decoration: none; color: inherit; transition: 0.2s;
-        }
+        .tile { background: var(--card-bg); padding: 16px; height: 120px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; color: inherit; transition: 0.2s; }
         .tile:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-bottom: 4px solid var(--sap-blue); }
         .tile h3 { font-size: 0.95rem; margin: 0; color: var(--sap-blue); }
         .tile-icon { font-size: 1.8rem; align-self: flex-end; }
@@ -66,7 +55,6 @@
         .result-panel { background: #eef6ff; padding: 20px; border-radius: 6px; text-align: center; border-left: 5px solid var(--sap-blue); margin-top: 15px; font-size: 1.2rem; }
         .btn-action { background: var(--sap-blue); color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
 
-        /* BRIEF PREVIEW */
         #brief-preview { display: none; margin-top: 30px; padding: 60px; background: white; border: 1px solid #ddd; min-height: 800px; }
         
         @media print {
@@ -82,33 +70,30 @@
 
     <div id="login-screen">
         <div class="login-box" id="loginBox">
-            <img src="IMG_4590.png" alt="Logo">
+            <img src="IMG_4590.png" alt="Logo" onerror="this.style.display='none'">
             <h2 style="margin-bottom: 20px; color: #354a5f;">ERP Login</h2>
             <input type="text" id="user" placeholder="Benutzername">
             <input type="password" id="pass" placeholder="Passwort">
             <button onclick="checkLogin()">Anmelden</button>
-            <p id="login-err" style="color:red; display:none; margin-top:15px; font-size: 0.85rem;">Login fehlgeschlagen. Bitte Daten prüfen.</p>
+            <p id="login-err" style="color:red; display:none; margin-top:15px; font-size: 0.85rem;">Fehlerhafte Daten!</p>
         </div>
     </div>
 
     <div id="main-ui" style="display:none;">
         <header>
             <div style="display:flex; align-items:center;">
-                <img src="IMG_4590.png" class="header-logo">
-                <span style="margin-left:15px; font-weight:bold; letter-spacing: 1px;">MHIMMOBILIEN ERP</span>
+                <img src="IMG_4590.png" class="header-logo" onerror="this.style.display='none'">
+                <span style="margin-left:15px; font-weight:bold;">MHIMMOBILIEN ERP</span>
             </div>
             <button onclick="location.reload()" style="background:none; border:1px solid white; color:white; border-radius:4px; cursor:pointer; padding:4px 12px;">Abmelden</button>
         </header>
 
         <div id="launchpad" class="launchpad">
-            <a href="https://versteigerungspool.de/amtsgerichte/ludwigshafen.34341" target="_blank" class="tile"><h3>ZVG Ludwigshafen</h3><div class="tile-icon">🏛️</div></a>
-            <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Frankenthal</h3><div class="tile-icon">🏛️</div></a>
             <div class="tile" onclick="openApp('fixflip')"><h3>Fix & Flip Rechner</h3><div class="tile-icon">🛠️</div></div>
             <div class="tile" onclick="openApp('kredit')"><h3>Kreditrechner</h3><div class="tile-icon">💶</div></div>
             <div class="tile" onclick="openApp('miete')"><h3>Mietrechner</h3><div class="tile-icon">📊</div></div>
             <div class="tile" onclick="openApp('bestand')"><h3>Immobilienbestand</h3><div class="tile-icon">🏢</div></div>
-            <div class="tile" onclick="openApp('brief')"><h3>Briefe / Vorlagen</h3><div class="tile-icon">✉️</div></div>
-            <div class="tile" onclick="openApp('checklisten')"><h3>Checklisten</h3><div class="tile-icon">📋</div></div>
+            <div class="tile" onclick="openApp('brief')"><h3>Brief Generator</h3><div class="tile-icon">✉️</div></div>
         </div>
 
         <div id="app-container">
@@ -117,6 +102,99 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script>
+        // Supabase sicher initialisieren
+        let supabase = null;
+        try {
+            const supabaseUrl = 'https://dofofjbjgbmpxjtlolzi.supabase.co';
+            const supabaseKey = 'sb_publishable_grgVSWN2j2zPAWGq_-qUug_yzc0QGV-';
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        } catch(e) {
+            console.error("Supabase konnte nicht geladen werden:", e);
+        }
+
+        function checkLogin() {
+            // Trim() entfernt unsichtbare Leerzeichen, toLowerCase() ignoriert Groß/Kleinschreibung
+            const u = document.getElementById('user').value.trim().toLowerCase();
+            const p = document.getElementById('pass').value.trim();
+            const box = document.getElementById('loginBox');
+            const err = document.getElementById('login-err');
+
+            if (u === 'admin' && p === 'admin') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-ui').style.display = 'block';
+            } else {
+                box.classList.remove('shake');
+                void box.offsetWidth; 
+                box.classList.add('shake');
+                err.style.display = 'block';
+            }
+        }
+
+        function openApp(id) {
+            document.getElementById('launchpad').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            const content = document.getElementById('app-content');
+            
+            if(id === 'fixflip') renderFixFlip(content);
+            if(id === 'kredit') renderKredit(content);
+            if(id === 'miete') renderMietrechner(content);
+            if(id === 'bestand') renderBestand(content);
+            if(id === 'brief') renderBrief(content);
+        }
+
+        function closeApp() {
+            document.getElementById('launchpad').style.display = 'grid';
+            document.getElementById('app-container').style.display = 'none';
+        }
+
+        const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
+
+        function renderFixFlip(container) {
+            container.innerHTML = '<h2>Fix & Flip</h2><div class="rechner-grid"><div class="section-box"><label>Kaufpreis</label><input type="number" id="kp" value="150000" oninput="calcFF()"><label>Sanierung</label><input type="number" id="san" value="25000" oninput="calcFF()"></div><div class="section-box"><label>Verkauf</label><input type="number" id="vk" value="220000" oninput="calcFF()"></div></div><div id="ff_r" class="result-panel"></div>';
+            calcFF();
+        }
+        function calcFF() {
+            const gewinn = getVal('vk') - getVal('kp') - getVal('san');
+            document.getElementById('ff_r').innerHTML = 'Gewinn: <b>' + gewinn + ' €</b>';
+        }
+
+        function renderKredit(container) {
+            container.innerHTML = '<h2>Kredit</h2><div class="section-box"><label>Darlehen</label><input type="number" id="kd" value="200000" oninput="calcK()"><label>Zins+Tilgung %</label><input type="number" id="kz" value="5.5" oninput="calcK()"></div><div id="k_r" class="result-panel"></div>';
+            calcK();
+        }
+        function calcK() {
+            const rate = (getVal('kd') * (getVal('kz')/100)) / 12;
+            document.getElementById('k_r').innerHTML = 'Rate mtl.: <b>' + rate.toFixed(2) + ' €</b>';
+        }
+
+        function renderMietrechner(container) {
+            container.innerHTML = '<h2>Miete</h2><div class="section-box"><label>Kaltmiete</label><input type="number" id="mk" value="850" oninput="calcM()"><label>Bankrate</label><input type="number" id="mb" value="500" oninput="calcM()"></div><div id="m_r" class="result-panel"></div>';
+            calcM();
+        }
+        function calcM() {
+            document.getElementById('m_r').innerHTML = 'Cashflow: <b>' + (getVal('mk') - getVal('mb')) + ' €</b>';
+        }
+
+        async function renderBestand(container) {
+            container.innerHTML = '<h2>Bestand</h2><p>Lade...</p>';
+            if(!supabase) { container.innerHTML = 'Datenbank nicht verbunden.'; return; }
+            const { data, error } = await supabase.from('immobilien').select('*');
+            if(error) { container.innerHTML = 'Fehler!'; return; }
+            let t = '<table width="100%"><tr><th align="left">Straße</th><th align="left">Miete</th></tr>';
+            data.forEach(i => t += '<tr><td>'+i.strasse+'</td><td>'+i.kaltmiete+' €</td></tr>');
+            container.innerHTML = '<h2>Bestand</h2>' + t + '</table>';
+        }
+
+        function renderBrief(container) {
+            container.innerHTML = '<div class="no-print"><h2>Brief</h2><input type="text" id="bn" placeholder="Empfänger"><textarea id="bt" style="height:100px"></textarea><button class="btn-action" onclick="printB()">Drucken</button></div><div id="bp" style="display:none; padding:40px;"></div>';
+        }
+        function printB() {
+            const p = document.getElementById('bp');
+            p.style.display = 'block';
+            p.innerHTML = '<h3>An: ' + document.getElementById('bn').value + '</h3><p>' + document.getElementById('bt').value + '</p>';
+            window.print();
+        }
+    </script>
 </body>
 </html>
