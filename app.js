@@ -1,9 +1,9 @@
-// 1. Supabase Initialisierung
-const supabaseUrl = 'https://dofofjbjgbmpxjtlolzi.supabase.co'; // BITTE DEINE URL EINTRAGEN
-const supabaseKey = 'sb_publishable_grgVSWN2j2zPAWGq_-qUug_yzc0QGV-'; // Dein öffentlicher Key
+// --- CONFIGURATION ---
+const supabaseUrl = 'https://DEINE_SUPABASE_URL.supabase.co'; // HIER DEINE URL EINTRAGEN
+const supabaseKey = 'sb_publishable_grgVSWN2j2zPAWGq_-qUug_yzc0QGV-';
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-// Routing-Logik für alle Kacheln
+// --- NAVIGATION ---
 function openApp(appName) {
     document.getElementById('launchpad').style.display = 'none';
     document.getElementById('app-container').style.display = 'block';
@@ -11,128 +11,13 @@ function openApp(appName) {
     content.innerHTML = ''; 
 
     switch(appName) {
+        case 'kredit': renderKreditrechner(content); break;
         case 'fixflip': renderFixFlipApp(content); break;
         case 'miete': renderMietrechner(content); break;
         case 'bestand': renderBestand(content); break;
         case 'brief': renderBriefApp(content); break;
-        case 'kredit': renderKreditrechner(content); break;
         case 'checklisten': renderChecklisten(content); break;
-        default: content.innerHTML = "<h2>In Arbeit</h2>";
-    }
-}
-
-// --- MIETRECHNER ---
-function renderMietrechner(container) {
-    container.innerHTML = `
-        <h2>Mietrechner (Cashflow)</h2>
-        <div class="ff-section">
-            <label>Vergleichsmiete (€/qm):</label> <input type="number" id="v_miete" value="10" onchange="calcMiete()">
-            <label>Wohnfläche (qm):</label> <input type="number" id="v_qm" value="50" onchange="calcMiete()">
-            <label>Hausgeld (Gesamt):</label> <input type="number" id="v_hg" value="250" onchange="calcMiete()">
-            <label>Umlagefähig:</label> <input type="number" id="v_umlage" value="200" onchange="calcMiete()">
-            <label>Kreditrate (mtl.):</label> <input type="number" id="v_rate" value="300" onchange="calcMiete()">
-            <hr>
-            <div class="result" id="res-miete">Cashflow: 0 €</div>
-        </div>
-    `;
-}
-
-function calcMiete() {
-    const miete = parseFloat(document.getElementById('v_miete').value) * parseFloat(document.getElementById('v_qm').value);
-    const nichtUmlage = parseFloat(document.getElementById('v_hg').value) - parseFloat(document.getElementById('v_umlage').value);
-    const cashflow = miete - nichtUmlage - parseFloat(document.getElementById('v_rate').value);
-    document.getElementById('res-miete').innerHTML = `
-        Kaltmiete: ${miete.toFixed(2)} €<br>
-        Nicht umlagefähig: ${nichtUmlage.toFixed(2)} €<br>
-        <strong>Cashflow mtl.: ${cashflow.toFixed(2)} €</strong>
-    `;
-}
-
-// --- IMMOBILIENBESTAND (TABELLE) ---
-async function renderBestand(container) {
-    container.innerHTML = `<h2>Immobilienbestand</h2><div id="table-loading">Lade Daten aus Supabase...</div>`;
-    
-    const { data, error } = await supabase.from('immobilien').select('*');
-    if (error) { container.innerHTML = "Fehler: " + error.message; return; }
-
-    let html = `<div style="overflow-x:auto;"><table border="1" style="width:100%; border-collapse: collapse; background: white;">
-        <tr style="background: #eee;">
-            <th>Straße/Stadt</th><th>qm</th><th>Zimmer</th><th>Miete (Kalt)</th><th>Hausgeld (n.u.)</th><th>Rendite</th>
-        </tr>`;
-    
-    data.forEach(immo => {
-        html += `<tr>
-            <td>${immo.strasse}, ${immo.stadt}</td>
-            <td>${immo.quadratmeter}</td>
-            <td>${immo.zimmer}</td>
-            <td>${immo.kaltmiete} €</td>
-            <td>${immo.hausgeld_nicht_umlagefaehig} €</td>
-            <td>${((immo.kaltmiete * 12) / 150000 * 100).toFixed(2)}%</td> </tr>`;
-    });
-    html += `</table></div>`;
-    container.innerHTML = html;
-}
-
-// --- VERMIETER BRIEF APP ---
-function renderBriefApp(container) {
-    container.innerHTML = `
-        <h2>Brief-Generator</h2>
-        <div class="ff-section">
-            <h3>Absender (Vermieter)</h3>
-            <input type="text" id="v_name" placeholder="Dein Name" style="width:100%"><br>
-            <input type="text" id="v_anschrift" placeholder="Straße, PLZ Ort" style="width:100%"><br>
-            <h3>Empfänger (Mieter)</h3>
-            <input type="text" id="m_name" placeholder="Name Mieter" style="width:100%"><br>
-            <input type="text" id="m_anschrift" placeholder="Straße, PLZ Ort" style="width:100%"><br>
-            <h3>Inhalt</h3>
-            <input type="text" id="b_betreff" placeholder="Betreffzeile" style="width:100%; font-weight:bold;"><br>
-            <textarea id="b_text" style="width:100%; height:150px;" placeholder="Brieftext..."></textarea><br>
-            <button onclick="printBrief()" style="background:green; color:white; padding:10px;">PDF / Drucken</button>
-        </div>
-        <div id="brief-preview" style="display:none; padding: 40px; background: white; color: black; font-family: Arial;">
-            </div>
-    `;
-}
-
-function printBrief() {
-    const preview = document.getElementById('brief-preview');
-    preview.style.display = 'block';
-    preview.innerHTML = `
-        <div style="text-align:right; font-size: 12px;">${document.getElementById('v_name').value}<br>${document.getElementById('v_anschrift').value}</div>
-        <div style="margin-top: 50px;">${document.getElementById('m_name').value}<br>${document.getElementById('m_anschrift').value}</div>
-        <div style="margin-top: 50px; text-align:right;">Datum: ${new Date().toLocaleDateString()}</div>
-        <div style="margin-top: 30px; font-weight:bold;">${document.getElementById('b_betreff').value}</div>
-        <div style="margin-top: 20px; line-height: 1.5;">${document.getElementById('b_text').value.replace(/\n/g, '<br>')}</div>
-        <div style="margin-top: 80px;">Unterschrift ____________________</div>
-    `;
-    window.print();
-}
-
-// --- CHECKLISTEN ---
-function renderChecklisten(container) {
-    container.innerHTML = `
-        <h2>Vordrucke & Checklisten</h2>
-        <div class="tile" onclick="window.print()">
-            <h3>Wohnungsübergabeprotokoll</h3>
-            <p>Klicke hier um den Standard-Vordruck mit Logo zu drucken.</p>
-        </div>
-        <div class="tile">
-            <h3>Hauskauf Checkliste</h3>
-            <p>Notizen zu Substanz, Keller, Dach, Heizung...</p>
-        </div>
-    `;
-}
-function openApp(appName) {
-    document.getElementById('launchpad').style.display = 'none';
-    document.getElementById('app-container').style.display = 'block';
-    
-    const content = document.getElementById('app-content');
-    content.innerHTML = ''; // Clear previous
-
-    if (appName === 'fixflip') {
-        renderFixFlipApp(content);
-    } else {
-        content.innerHTML = `<h2>App: ${appName}</h2><p>Diese App befindet sich noch in der Entwicklung.</p>`;
+        default: content.innerHTML = "<h2>App nicht gefunden</h2>";
     }
 }
 
@@ -141,124 +26,199 @@ function closeApp() {
     document.getElementById('app-container').style.display = 'none';
 }
 
+// --- 1. KREDITRECHNER (Annuität) ---
+function renderKreditrechner(container) {
+    container.innerHTML = `
+        <h2>Kreditrechner</h2>
+        <div class="ff-section">
+            <label>Darlehensbetrag (€):</label> <input type="number" id="kr_betrag" value="200000" oninput="calcKredit()">
+            <label>Sollzins (%):</label> <input type="number" id="kr_zins" value="3.5" step="0.1" oninput="calcKredit()">
+            <label>Tilgung (%):</label> <input type="number" id="kr_tilgung" value="2" step="0.1" oninput="calcKredit()">
+            <hr>
+            <div class="result" id="kr_res">Monatliche Rate: 0 €</div>
+        </div>
+    `;
+    calcKredit();
+}
+
+function calcKredit() {
+    const b = parseFloat(document.getElementById('kr_betrag').value);
+    const z = parseFloat(document.getElementById('kr_zins').value) / 100;
+    const t = parseFloat(document.getElementById('kr_tilgung').value) / 100;
+    const rate = (b * (z + t)) / 12;
+    document.getElementById('kr_res').innerHTML = `<strong>Monatliche Rate: ${rate.toFixed(2)} €</strong>`;
+}
+
+// --- 2. FIX & FLIP RECHNER (Die 4 Teile) ---
 function renderFixFlipApp(container) {
     container.innerHTML = `
         <h2>Fix & Flip Rechner</h2>
-        <style>
-            .ff-section { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; border-radius: 4px; }
-            .ff-section h3 { margin-bottom: 0.5rem; color: var(--sap-blue); }
-            label { display: inline-block; width: 180px; margin-top: 0.5rem; }
-            input, select { padding: 0.3rem; width: 150px; }
-            .result { font-weight: bold; margin-top: 1rem; border-top: 1px solid #eee; padding-top: 0.5rem; }
-            .traffic-light { padding: 1rem; color: white; font-weight: bold; text-align: center; border-radius: 4px; margin-top: 1rem;}
-        </style>
-
-        <div class="ff-section" id="ankauf">
+        <div class="ff-section">
             <h3>1. Ankauf</h3>
-            <label>Kaufpreis (€):</label> <input type="number" id="kp" value="100000" onchange="calcFF()"><br>
-            <label>Wohnfläche (qm):</label> <input type="number" id="qm" value="70" onchange="calcFF()"><br>
-            <label>Makler (%):</label> <input type="number" id="makler" value="3.57" onchange="calcFF()"><br>
-            <label>Notar & Grundbuch (%):</label> <input type="number" id="notar" value="1.5" readonly><br>
-            <label>Bundesland (Grunderwerb):</label> 
-            <select id="bundesland" onchange="calcFF()">
-                <option value="5.0">Rheinland-Pfalz (5,0%)</option>
-                <option value="5.0">Baden-Württemberg (5,0%)</option>
-                <option value="6.0">Hessen (6,0%)</option>
+            <label>Kaufpreis (€):</label> <input type="number" id="ff_kp" value="150000" oninput="calcFF()">
+            <label>Wohnfläche (qm):</label> <input type="number" id="ff_qm" value="80" oninput="calcFF()">
+            <label>Bundesland:</label>
+            <select id="ff_land" onchange="calcFF()">
+                <option value="5">RLP (5%)</option>
+                <option value="5">BW (5%)</option>
+                <option value="6">Hessen (6%)</option>
                 <option value="3.5">Bayern (3,5%)</option>
             </select>
-            <div class="result" id="res-ankauf">Gesamtkosten Ankauf: 0 €</div>
+            <p>Notar & Grundbuch: 1,5% (fest)</p>
+            <label>Makler (%):</label> <input type="number" id="ff_makler" value="3.57" oninput="calcFF()">
         </div>
-
-        <div class="ff-section" id="finanzierung">
+        <div class="ff-section">
             <h3>2. Finanzierung</h3>
-            <label>Projektdauer (Monate):</label> <input type="number" id="dauer" value="6" onchange="calcFF()"><br>
-            <label>Finanzierungshöhe (%):</label> <input type="number" id="fin_prozent" value="100" onchange="calcFF()"><br>
-            <label>Zins (% p.a.):</label> <input type="number" id="zins" value="6.0" onchange="calcFF()"><br>
-            <label>Bearbeitungsgebühr (%):</label> <input type="number" id="gebuehr" value="1.0" onchange="calcFF()"><br>
-            <div class="result" id="res-finanzierung">Finanzierungskosten (Gesamtprojekt): 0 €</div>
+            <label>Dauer (Monate):</label> <input type="number" id="ff_dauer" value="6" oninput="calcFF()">
+            <label>Zins (% p.a.):</label> <input type="number" id="ff_zins" value="6" oninput="calcFF()">
+            <label>Gebühr (%):</label> <input type="number" id="ff_geb" value="1" oninput="calcFF()">
         </div>
-
-        <div class="ff-section" id="renovierung">
+        <div class="ff-section">
             <h3>3. Renovierung</h3>
-            <label>Entrümpelung (€):</label> <input type="number" id="entruempelung" value="3000" onchange="calcFF()"><br>
-            <label>Renovierung (€):</label> <input type="number" id="reno" value="20000" onchange="calcFF()"><br>
-            <label>Sicherheitspuffer (%):</label> <input type="number" id="puffer" value="10" onchange="calcFF()"><br>
-            <label>Küche (€):</label> <input type="number" id="kueche" value="0" onchange="calcFF()"><br>
-            <label>Sonstiges (€):</label> <input type="number" id="sonstiges" value="0" onchange="calcFF()"><br>
-            <div class="result" id="res-renovierung">Renovierungssumme: 0 €</div>
+            <label>Entrümpelung (€):</label> <input type="number" id="ff_ent" value="3000" oninput="calcFF()">
+            <label>Renovierung (€):</label> <input type="number" id="ff_reno" value="20000" oninput="calcFF()">
+            <label>Küche (€):</label> <input type="number" id="ff_kue" value="0" oninput="calcFF()">
+            <p>Sicherheitspuffer: 10% (inkludiert)</p>
         </div>
-
-        <div class="ff-section" id="monatlich">
-            <h3>4. Laufende Kosten (pro Monat)</h3>
-            <label>Hausgeld (€):</label> <input type="number" id="hausgeld" value="200" onchange="calcFF()"><br>
-            <label>Strom/Heizung (€):</label> <input type="number" id="strom" value="50" onchange="calcFF()"><br>
-            <div class="result" id="res-monatlich">Nebenkosten (Gesamtprojekt): 0 €</div>
-        </div>
-
-        <div class="ff-section" id="verkauf">
-            <h3>5. Verkauf & Rendite</h3>
-            <label>Verkaufspreis (€/qm):</label> <input type="number" id="vk_qm" value="2500" onchange="calcFF()"><br>
-            <div class="result" id="res-verkauf">Erwarteter Verkaufspreis: 0 €</div>
-            <div id="profit-ampel" class="traffic-light">Bitte Werte berechnen</div>
+        <div class="ff-section">
+            <h3>4. Monatliche Kosten & Verkauf</h3>
+            <label>Hausgeld (€):</label> <input type="number" id="ff_hg" value="200" oninput="calcFF()">
+            <label>Strom/Heizung (€):</label> <input type="number" id="ff_sh" value="50" oninput="calcFF()">
+            <hr>
+            <label>Verkaufspreis (€/qm):</label> <input type="number" id="ff_vk_qm" value="3500" oninput="calcFF()">
+            <div id="ff_ampel" style="padding:15px; margin-top:10px; border-radius:5px; font-weight:bold; text-align:center;">-</div>
         </div>
     `;
-    calcFF(); // Initial calculation
+    calcFF();
 }
 
 function calcFF() {
-    // 1. Ankauf
-    const kp = parseFloat(document.getElementById('kp').value);
-    const makler = kp * (parseFloat(document.getElementById('makler').value) / 100);
-    const notar = kp * (parseFloat(document.getElementById('notar').value) / 100);
-    const grunderwerb = kp * (parseFloat(document.getElementById('bundesland').value) / 100);
-    const ankaufGesamt = kp + makler + notar + grunderwerb;
-    document.getElementById('res-ankauf').innerText = `Gesamtkosten Ankauf: ${ankaufGesamt.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})}`;
-
-    // 3. Renovierung (Muss vor Finanzierung berechnet werden, falls 100% inkl. Reno finanziert wird. Hier gehen wir von 100% Kaufpreis+NK+Reno aus)
-    const entruempelung = parseFloat(document.getElementById('entruempelung').value);
-    const reno = parseFloat(document.getElementById('reno').value);
-    const kueche = parseFloat(document.getElementById('kueche').value);
-    const sonst = parseFloat(document.getElementById('sonstiges').value);
-    const renoSubtotal = entruempelung + reno + kueche + sonst;
-    const renoGesamt = renoSubtotal + (renoSubtotal * (parseFloat(document.getElementById('puffer').value) / 100));
-    document.getElementById('res-renovierung').innerText = `Renovierungssumme: ${renoGesamt.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})}`;
-
+    const kp = parseFloat(document.getElementById('ff_kp').value);
+    const qm = parseFloat(document.getElementById('ff_qm').value);
+    const land = parseFloat(document.getElementById('ff_land').value) / 100;
+    const makler = parseFloat(document.getElementById('ff_makler').value) / 100;
+    
+    // 1. Ankauf Kosten
+    const ankaufNK = kp * (land + 0.015 + makler);
+    const ankaufGesamt = kp + ankaufNK;
+    
+    // 3. Reno
+    const renoBasis = parseFloat(document.getElementById('ff_ent').value) + parseFloat(document.getElementById('ff_reno').value) + parseFloat(document.getElementById('ff_kue').value);
+    const renoGesamt = renoBasis * 1.10; // 10% Puffer
+    
     // 2. Finanzierung
-    const dauerMonate = parseFloat(document.getElementById('dauer').value);
-    const finProzent = parseFloat(document.getElementById('fin_prozent').value) / 100;
-    const kreditsumme = (ankaufGesamt + renoGesamt) * finProzent;
-    const zinsPa = parseFloat(document.getElementById('zins').value) / 100;
-    const zinskostenProjekt = kreditsumme * zinsPa * (dauerMonate / 12);
-    const gebuehren = kreditsumme * (parseFloat(document.getElementById('gebuehr').value) / 100);
-    const finGesamt = zinskostenProjekt + gebuehren;
-    document.getElementById('res-finanzierung').innerText = `Finanzierungskosten (Gesamtprojekt): ${finGesamt.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})} (Rate/Monat ca. ${(zinskostenProjekt/dauerMonate).toLocaleString('de-DE')} €)`;
+    const dauer = parseFloat(document.getElementById('ff_dauer').value);
+    const darlehen = ankaufGesamt + renoGesamt;
+    const finKosten = (darlehen * (parseFloat(document.getElementById('ff_zins').value)/100) * (get_val('ff_dauer')/12)) + (darlehen * (parseFloat(document.getElementById('ff_geb').value)/100));
+    
+    // 4. NK
+    const nkGesamt = (parseFloat(document.getElementById('ff_hg').value) + parseFloat(document.getElementById('ff_sh').value)) * dauer;
+    
+    // Total & Profit
+    const gesamtInvest = ankaufGesamt + renoGesamt + finKosten + nkGesamt;
+    const verkaufspreis = qm * parseFloat(document.getElementById('ff_vk_qm').value);
+    const profit = verkaufspreis - gesamtInvest;
+    const marge = (profit / verkaufspreis) * 100;
 
-    // 4. Laufende Kosten
-    const nkMonat = parseFloat(document.getElementById('hausgeld').value) + parseFloat(document.getElementById('strom').value);
-    const nkGesamt = nkMonat * dauerMonate;
-    document.getElementById('res-monatlich').innerText = `Nebenkosten (Gesamtprojekt): ${nkGesamt.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})}`;
+    const ampel = document.getElementById('ff_ampel');
+    ampel.innerHTML = `Profit: ${profit.toFixed(2)} € (${marge.toFixed(1)}%)`;
+    
+    if (marge >= 25) { ampel.style.background = "#28a745"; ampel.style.color = "white"; }
+    else if (marge >= 20) { ampel.style.background = "#ffc107"; ampel.style.color = "black"; }
+    else { ampel.style.background = "#dc3545"; ampel.style.color = "white"; }
+}
 
-    // 5. Verkauf & Profit
-    const qm = parseFloat(document.getElementById('qm').value);
-    const vkQm = parseFloat(document.getElementById('vk_qm').value);
-    const vkPreis = qm * vkQm;
-    document.getElementById('res-verkauf').innerText = `Erwarteter Verkaufspreis: ${vkPreis.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})}`;
+function get_val(id) { return parseFloat(document.getElementById(id).value) || 0; }
 
-    // Profit berechnen
-    const gesamtKosten = ankaufGesamt + renoGesamt + finGesamt + nkGesamt;
-    const profit = vkPreis - gesamtKosten;
-    const profitMarge = (profit / vkPreis) * 100; // Prozentualer Profit vom Verkaufspreis
+// --- 3. MIETRECHNER ---
+function renderMietrechner(container) {
+    container.innerHTML = `
+        <h2>Mietrechner</h2>
+        <div class="ff-section">
+            <label>Miete (€/qm):</label> <input type="number" id="m_qm_p" value="12" oninput="calcM()">
+            <label>Fläche (qm):</label> <input type="number" id="m_fl" value="60" oninput="calcM()">
+            <label>Hausgeld (€):</label> <input type="number" id="m_hg" value="250" oninput="calcM()">
+            <label>Umlagefähig (€):</label> <input type="number" id="m_um" value="180" oninput="calcM()">
+            <label>Kreditrate (€):</label> <input type="number" id="m_rate" value="400" oninput="calcM()">
+            <div class="result" id="m_res">Cashflow: 0 €</div>
+        </div>
+    `;
+    calcM();
+}
 
-    const ampel = document.getElementById('profit-ampel');
-    ampel.innerText = `Profit: ${profit.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})} (${profitMarge.toFixed(2)}%)`;
+function calcM() {
+    const miete = get_val('m_qm_p') * get_val('m_fl');
+    const nichtUmlage = get_val('m_hg') - get_val('m_um');
+    const cf = miete - nichtUmlage - get_val('m_rate');
+    document.getElementById('m_res').innerHTML = `Cashflow: <strong>${cf.toFixed(2)} €</strong>`;
+}
 
-    // Ampel-Logik
-    if (profitMarge >= 25) {
-        ampel.style.backgroundColor = '#28a745'; // Grün
-    } else if (profitMarge >= 20 && profitMarge < 25) {
-        ampel.style.backgroundColor = '#ffc107'; // Gelb
-        ampel.style.color = '#333';
-    } else {
-        ampel.style.backgroundColor = '#dc3545'; // Rot
-    }
+// --- 4. BESTAND (Tabelle) ---
+async function renderBestand(container) {
+    container.innerHTML = `<h2>Immobilienbestand</h2><p>Lade aus Supabase...</p>`;
+    const { data, error } = await supabase.from('immobilien').select('*');
+    if (error) { container.innerHTML = "Fehler: " + error.message; return; }
+    
+    let table = `<table style="width:100%; border-collapse: collapse; margin-top:10px;">
+        <tr style="background:#0070f2; color:white;">
+            <th style="padding:10px;">Strasse</th><th>Stadt</th><th>qm</th><th>Miete</th>
+        </tr>`;
+    data.forEach(i => {
+        table += `<tr style="border-bottom:1px solid #ddd;">
+            <td style="padding:10px;">${i.strasse}</td><td>${i.stadt}</td><td>${i.quadratmeter}</td><td>${i.kaltmiete} €</td>
+        </tr>`;
+    });
+    table += `</table>`;
+    container.innerHTML = table;
+}
+
+// --- 5. BRIEF APP ---
+function renderBriefApp(container) {
+    container.innerHTML = `
+        <h2>Brief-Generator</h2>
+        <div class="ff-section" id="brief-form">
+            <input type="text" id="b_abs" placeholder="Absender Name/Anschrift" style="width:100%; margin-bottom:5px;">
+            <input type="text" id="b_mie" placeholder="Mieter Name/Anschrift" style="width:100%; margin-bottom:5px;">
+            <input type="text" id="b_bet" placeholder="Betreff" style="width:100%; margin-bottom:5px;">
+            <textarea id="b_txt" placeholder="Inhalt..." style="width:100%; height:150px;"></textarea>
+            <button onclick="druckeBrief()" style="width:100%; padding:10px; background:#0070f2; color:white; border:none; cursor:pointer;">Brief generieren & Drucken</button>
+        </div>
+    `;
+}
+
+function druckeBrief() {
+    const content = `
+        <div style="padding:50px; font-family:Arial;">
+            <img src="IMG_4590.png" style="height:50px; float:right;">
+            <div style="margin-top:80px;">${document.getElementById('b_abs').value}</div>
+            <div style="margin-top:40px;">${document.getElementById('b_mie').value}</div>
+            <div style="margin-top:40px; font-weight:bold;">${document.getElementById('b_bet').value}</div>
+            <div style="margin-top:20px;">${document.getElementById('b_txt').value.replace(/\n/g, '<br>')}</div>
+            <div style="margin-top:60px;">Ort, Datum: _________________</div>
+            <div style="margin-top:40px;">Unterschrift: _________________</div>
+        </div>
+    `;
+    const win = window.open('', '_blank');
+    win.document.write(content);
+    win.print();
+}
+
+// --- 6. CHECKLISTEN ---
+function renderChecklisten(container) {
+    container.innerHTML = `
+        <h2>Checklisten</h2>
+        <div class="ff-section" onclick="window.print()" style="cursor:pointer; background:#f9f9f9;">
+            <h3>📋 Wohnungsübergabeprotokoll</h3>
+            <p>Klicken zum Drucken (Vordruck mit MHIMMOBILIEN Logo)</p>
+        </div>
+        <div class="ff-section">
+            <h3>🏠 Hauskauf Checkliste</h3>
+            <ul>
+                <li>Dachzustand & Dämmung</li>
+                <li>Heizungsart & Baujahr</li>
+                <li>Feuchtigkeit im Keller?</li>
+                <li>Energieausweis vorhanden?</li>
+            </ul>
+        </div>
+    `;
 }
