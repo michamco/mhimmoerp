@@ -18,18 +18,27 @@
 
         body { 
             background-color: var(--sap-bg); 
-            font-family: Arial, Helvetica, sans-serif; 
+            font-family: Arial, sans-serif; 
             margin: 0; padding: 0; color: var(--text-color);
         }
 
-        /* Login Screen */
+        /* LOGIN SCREEN */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--sap-shell); }
-        .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center; width: 320px; }
+        .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; width: 320px; transition: transform 0.2s; }
         .login-box img { width: 150px; margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; }
-        .login-box button { width: 100%; padding: 12px; background: var(--sap-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        .login-box button { width: 100%; padding: 12px; background: var(--sap-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        
+        /* Shake Animation für falschen Login */
+        .shake { animation: shakeAnim 0.4s ease-in-out; border: 2px solid #dc3545; }
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+        }
 
-        /* Main Shell */
+        /* MAIN UI */
         header { background: var(--sap-shell); height: 48px; display: flex; align-items: center; padding: 0 20px; color: white; justify-content: space-between; }
         .header-logo { height: 32px; filter: brightness(0) invert(1); }
 
@@ -44,18 +53,20 @@
         .tile h3 { font-size: 0.95rem; margin: 0; color: var(--sap-blue); }
         .tile-icon { font-size: 1.8rem; align-self: flex-end; }
 
+        /* APP CONTAINER */
         #app-container { display: none; padding: 20px; max-width: 1100px; margin: 20px auto; }
-        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .rechner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .section-box { border: 1px solid #eee; padding: 15px; border-radius: 6px; margin-bottom: 10px; }
-        .section-box h3 { margin-top: 0; font-size: 1rem; color: var(--sap-blue); border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .section-box { border: 1px solid #eee; padding: 15px; border-radius: 6px; margin-bottom: 10px; background: #fafafa; }
+        .section-box h3 { margin-top: 0; font-size: 1rem; color: var(--sap-blue); border-bottom: 1px solid #ddd; padding-bottom: 5px; }
         
         label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #666; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; margin-bottom: 10px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; margin-bottom: 10px; font-size: 1rem; }
         
-        .result-panel { background: #f0f7ff; padding: 20px; border-radius: 6px; text-align: center; border-left: 5px solid var(--sap-blue); margin-top: 15px; }
+        .result-panel { background: #eef6ff; padding: 20px; border-radius: 6px; text-align: center; border-left: 5px solid var(--sap-blue); margin-top: 15px; font-size: 1.2rem; }
         .btn-action { background: var(--sap-blue); color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
 
+        /* BRIEF PREVIEW */
         #brief-preview { display: none; margin-top: 30px; padding: 60px; background: white; border: 1px solid #ddd; min-height: 800px; }
         
         @media print {
@@ -63,19 +74,20 @@
             body { background: white; }
             #app-container { margin: 0; max-width: 100%; padding: 0; }
             .card { box-shadow: none; border: none; padding: 0; }
+            #brief-preview { display: block !important; border: none; padding: 0; }
         }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="login-box">
+        <div class="login-box" id="loginBox">
             <img src="IMG_4590.png" alt="Logo">
-            <h2>ERP Login</h2>
+            <h2 style="margin-bottom: 20px; color: #354a5f;">ERP Login</h2>
             <input type="text" id="user" placeholder="Benutzername">
             <input type="password" id="pass" placeholder="Passwort">
-            <button onclick="checkLogin()">Einloggen</button>
-            <p id="login-err" style="color:red; display:none; margin-top:10px;">Login fehlgeschlagen.</p>
+            <button onclick="checkLogin()">Anmelden</button>
+            <p id="login-err" style="color:red; display:none; margin-top:15px; font-size: 0.85rem;">Login fehlgeschlagen. Bitte Daten prüfen.</p>
         </div>
     </div>
 
@@ -83,25 +95,24 @@
         <header>
             <div style="display:flex; align-items:center;">
                 <img src="IMG_4590.png" class="header-logo">
-                <span style="margin-left:15px; font-weight:bold;">MHIMMOBILIEN ERP</span>
+                <span style="margin-left:15px; font-weight:bold; letter-spacing: 1px;">MHIMMOBILIEN ERP</span>
             </div>
-            <button onclick="location.reload()" style="background:none; border:1px solid white; color:white; border-radius:4px; cursor:pointer; padding:4px 8px;">Logout</button>
+            <button onclick="location.reload()" style="background:none; border:1px solid white; color:white; border-radius:4px; cursor:pointer; padding:4px 12px;">Abmelden</button>
         </header>
 
         <div id="launchpad" class="launchpad">
-            <a href="https://versteigerungspool.de/amtsgerichte/ludwigshafen.34341" target="_blank" class="tile"><h3>ZVG LU</h3><div class="tile-icon">🏛️</div></a>
-            <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG FT</h3><div class="tile-icon">🏛️</div></a>
-            
-            <div class="tile" onclick="openApp('fixflip')"><h3>Fix & Flip</h3><div class="tile-icon">🛠️</div></div>
+            <a href="https://versteigerungspool.de/amtsgerichte/ludwigshafen.34341" target="_blank" class="tile"><h3>ZVG Ludwigshafen</h3><div class="tile-icon">🏛️</div></a>
+            <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Frankenthal</h3><div class="tile-icon">🏛️</div></a>
+            <div class="tile" onclick="openApp('fixflip')"><h3>Fix & Flip Rechner</h3><div class="tile-icon">🛠️</div></div>
             <div class="tile" onclick="openApp('kredit')"><h3>Kreditrechner</h3><div class="tile-icon">💶</div></div>
             <div class="tile" onclick="openApp('miete')"><h3>Mietrechner</h3><div class="tile-icon">📊</div></div>
-            <div class="tile" onclick="openApp('bestand')"><h3>Bestand</h3><div class="tile-icon">🏢</div></div>
-            <div class="tile" onclick="openApp('brief')"><h3>Briefe</h3><div class="tile-icon">✉️</div></div>
+            <div class="tile" onclick="openApp('bestand')"><h3>Immobilienbestand</h3><div class="tile-icon">🏢</div></div>
+            <div class="tile" onclick="openApp('brief')"><h3>Briefe / Vorlagen</h3><div class="tile-icon">✉️</div></div>
             <div class="tile" onclick="openApp('checklisten')"><h3>Checklisten</h3><div class="tile-icon">📋</div></div>
         </div>
 
         <div id="app-container">
-            <button class="no-print" style="margin-bottom:15px; padding:8px; cursor:pointer;" onclick="closeApp()">⬅ Zurück zum Launchpad</button>
+            <button class="no-print" style="margin-bottom:15px; padding:8px 15px; cursor:pointer; background:#eee; border:1px solid #ccc; border-radius:4px;" onclick="closeApp()">⬅ Zurück</button>
             <div id="app-content" class="card"></div>
         </div>
     </div>
