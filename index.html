@@ -8,77 +8,54 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --sap-blue: #0070f2;
-            --sap-bg: #edeff0;
-            --card-bg: #ffffff;
-            --sap-shell: #354a5f;
-            --text-color: #32363a;
-            --border-color: #d9d9d9;
+            --sap-blue: #0070f2; --sap-bg: #edeff0; --card-bg: #ffffff;
+            --sap-shell: #354a5f; --text-color: #32363a; --border-color: #d9d9d9;
         }
 
-        body { 
-            background-color: var(--sap-bg); 
-            font-family: Arial, sans-serif; 
-            margin: 0; padding: 0; color: var(--text-color);
-        }
+        body { background-color: var(--sap-bg); font-family: Arial, sans-serif; margin: 0; padding: 0; color: var(--text-color); }
 
         /* LOGIN SCREEN */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--sap-shell); }
-        .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; width: 320px; transition: transform 0.2s; }
+        .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; width: 320px; transition: 0.2s; }
         .login-box img { width: 180px; margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-        .login-box button { width: 100%; padding: 12px; background: var(--sap-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; }
+        .login-box button { width: 100%; padding: 12px; background: var(--sap-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         
-        /* Shake Animation für falschen Login */
         .shake { animation: shakeAnim 0.4s ease-in-out; border: 2px solid #dc3545; }
-        @keyframes shakeAnim {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            50% { transform: translateX(10px); }
-            75% { transform: translateX(-10px); }
-        }
+        @keyframes shakeAnim { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-10px); } 50% { transform: translateX(10px); } }
 
         /* MAIN UI */
         header { background: var(--sap-shell); height: 48px; display: flex; align-items: center; padding: 0 20px; color: white; justify-content: space-between; }
         .header-logo { height: 32px; filter: brightness(0) invert(1); }
 
         .launchpad { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
-        .tile { 
-            background: var(--card-bg); padding: 16px; height: 130px; cursor: pointer; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px;
-            display: flex; flex-direction: column; justify-content: space-between; 
-            text-decoration: none; color: inherit; transition: 0.2s;
-        }
+        .tile { background: var(--card-bg); padding: 16px; height: 130px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.2s; }
         .tile:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-bottom: 4px solid var(--sap-blue); }
-        .tile h3 { font-size: 1rem; margin: 0; color: var(--sap-blue); font-weight: 600; }
+        .tile h3 { font-size: 1rem; margin: 0; color: var(--sap-blue); }
         .tile-icon { font-size: 2rem; align-self: flex-end; opacity: 0.8; }
 
         /* APP CONTAINER */
         #app-container { display: none; padding: 20px; max-width: 1100px; margin: 20px auto; }
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
-        /* Rechner Layouts */
-        .rechner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .rechner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .section-box { border: 1px solid #eee; padding: 20px; border-radius: 6px; margin-bottom: 15px; background: #fafafa; }
         .section-box h3 { margin-top: 0; font-size: 1.1rem; color: var(--sap-blue); border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 15px; }
         
         label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: #666; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; margin-bottom: 15px; font-size: 1rem; }
-        input:focus, textarea:focus { outline: none; border-color: var(--sap-blue); }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; margin-bottom: 15px; }
         
         .result-panel { background: #eef6ff; padding: 20px; border-radius: 6px; text-align: center; border-left: 5px solid var(--sap-blue); margin-top: 15px; font-size: 1.2rem; }
-        .btn-action { background: var(--sap-blue); color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1rem; }
-        .btn-action:hover { background: #005bc4; }
+        .btn-action { background: var(--sap-blue); color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
 
-        /* BRIEF PREVIEW */
-        #brief-preview { display: none; margin-top: 30px; padding: 60px; background: white; border: 1px solid #ddd; min-height: 800px; }
+        /* DRUCK BEREICH */
+        #print-area { display: none; }
         
         @media print {
-            .no-print { display: none !important; }
-            body { background: white; }
-            #app-container { margin: 0; max-width: 100%; padding: 0; }
-            .card { box-shadow: none; border: none; padding: 0; }
-            #brief-preview { display: block !important; border: none; padding: 0; }
+            body * { visibility: hidden; } /* Versteckt das gesamte ERP System */
+            #print-area, #print-area * { visibility: visible; } /* Zeigt nur den Druckbereich */
+            #print-area { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 20px; background: white; color: black; }
+            .page-break { page-break-before: always; }
         }
     </style>
 </head>
@@ -86,93 +63,90 @@
 
     <div id="login-screen">
         <div class="login-box" id="loginBox">
-            <img src="IMG_4590.png" alt="MHIMMOBILIEN Logo" onerror="this.style.display='none'">
+            <img src="IMG_4590.png" alt="Logo" onerror="this.style.display='none'">
             <h2 style="margin-bottom: 20px; color: var(--sap-shell);">ERP Login</h2>
             <input type="text" id="user" placeholder="Benutzername">
             <input type="password" id="pass" placeholder="Passwort">
             <button onclick="checkLogin()">Anmelden</button>
-            <p id="login-err" style="color:#dc3545; display:none; margin-top:15px; font-size: 0.9rem; font-weight:bold;">Login fehlgeschlagen!</p>
+            <p id="login-err" style="color:#dc3545; display:none; margin-top:15px; font-weight:bold;">Zugriff verweigert!</p>
         </div>
     </div>
 
     <div id="main-ui" style="display:none;">
         <header>
             <div style="display:flex; align-items:center;">
-                <img src="IMG_4590.png" class="header-logo" alt="Logo" onerror="this.style.display='none'">
-                <span style="margin-left:15px; font-weight:bold; font-size: 1.1rem; letter-spacing: 1px;">MHIMMOBILIEN ERP</span>
+                <img src="IMG_4590.png" class="header-logo" onerror="this.style.display='none'">
+                <span style="margin-left:15px; font-weight:bold; letter-spacing: 1px;">MHIMMOBILIEN ERP</span>
             </div>
-            <button onclick="location.reload()" style="background:transparent; border:1px solid white; color:white; border-radius:4px; cursor:pointer; padding:6px 15px; font-weight:bold;">Abmelden</button>
+            <div style="color: white; font-size: 0.9rem;">
+                Eingeloggt als: <span id="currentUser"></span>
+                <button onclick="location.reload()" style="background:transparent; border:1px solid white; color:white; border-radius:4px; margin-left: 15px; cursor:pointer; padding:4px 10px;">Logout</button>
+            </div>
         </header>
 
         <div id="launchpad" class="launchpad">
-            <a href="https://versteigerungspool.de/amtsgerichte/ludwigshafen.34341" target="_blank" class="tile"><h3>ZVG Ludwigshafen</h3><div class="tile-icon">🏛️</div></a>
-            <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Frankenthal</h3><div class="tile-icon">🏛️</div></a>
-            <a href="https://versteigerungspool.de/amtsgerichte/mannheim.2739/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Mannheim</h3><div class="tile-icon">🏛️</div></a>
-            <a href="https://baufinanzierung.check24.de/baufinanzierung/immobilienbewertung?deviceoutput=desktop" target="_blank" class="tile"><h3>Immo-Bewertung</h3><div class="tile-icon">📈</div></a>
-            
             <div class="tile" onclick="openApp('fixflip')"><h3>Fix & Flip Rechner</h3><div class="tile-icon">🛠️</div></div>
             <div class="tile" onclick="openApp('kredit')"><h3>Kreditrechner</h3><div class="tile-icon">💶</div></div>
             <div class="tile" onclick="openApp('miete')"><h3>Mietrechner</h3><div class="tile-icon">📊</div></div>
+            <div class="tile" onclick="openApp('steuer')"><h3>Steuer Erstattung</h3><div class="tile-icon">💰</div></div>
             <div class="tile" onclick="openApp('bestand')"><h3>Immobilienbestand</h3><div class="tile-icon">🏢</div></div>
             <div class="tile" onclick="openApp('brief')"><h3>Brief Generator</h3><div class="tile-icon">✉️</div></div>
-            <div class="tile" onclick="openApp('checklisten')"><h3>Checklisten</h3><div class="tile-icon">📋</div></div>
+            <div class="tile" onclick="openApp('checklisten')"><h3>Übergabeprotokoll</h3><div class="tile-icon">📋</div></div>
+            <div class="tile" onclick="openApp('admin')" id="admin-tile" style="display:none; border: 2px solid #dc3545;"><h3>User Admin</h3><div class="tile-icon">⚙️</div></div>
         </div>
 
         <div id="app-container">
-            <button class="no-print" style="margin-bottom:20px; padding:10px 20px; cursor:pointer; background:#6a6d70; color:white; border:none; border-radius:4px; font-weight:bold;" onclick="closeApp()">⬅ Zurück zum Launchpad</button>
+            <button class="no-print" style="margin-bottom:20px; padding:10px 20px; cursor:pointer; background:#6a6d70; color:white; border:none; border-radius:4px; font-weight:bold;" onclick="closeApp()">⬅ Zurück</button>
             <div id="app-content" class="card"></div>
         </div>
     </div>
 
-    <script>
-        // 1. Supabase Setup (mit umbenannter Variable wegen Namenskonflikt!)
-        let supabaseClient = null;
-        try {
-            const supabaseUrl = 'https://dofofjbjgbmpxjtlolzi.supabase.co';
-            const supabaseKey = 'sb_publishable_grgVSWN2j2zPAWGq_-qUug_yzc0QGV-';
-            supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-        } catch(e) {
-            console.error("Datenbankverbindung fehlgeschlagen:", e);
-        }
+    <div id="print-area"></div>
 
-        // 2. Login Funktion
+    <script>
+        let supabaseClient = null;
+        let loggedInUser = '';
+
+        try {
+            supabaseClient = window.supabase.createClient('https://dofofjbjgbmpxjtlolzi.supabase.co', 'sb_publishable_grgVSWN2j2zPAWGq_-qUug_yzc0QGV-');
+        } catch(e) { console.error(e); }
+
         function checkLogin() {
             const u = document.getElementById('user').value.trim().toLowerCase();
             const p = document.getElementById('pass').value.trim();
             const box = document.getElementById('loginBox');
             const err = document.getElementById('login-err');
 
-            if (u === 'admin' && p === 'admin') {
+            // Simulierter Login (Hier kann man später echte Supabase Auth anbinden)
+            if ((u === 'admin' && p === 'admin') || (u !== '' && p !== '')) {
+                loggedInUser = u;
+                document.getElementById('currentUser').innerText = u;
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-ui').style.display = 'block';
+                
+                if(u === 'admin') {
+                    document.getElementById('admin-tile').style.display = 'flex';
+                }
             } else {
-                box.classList.remove('shake');
-                void box.offsetWidth; // Neustart der Animation erzwingen
-                box.classList.add('shake');
+                box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake');
                 err.style.display = 'block';
             }
         }
 
-        // Login per Enter-Taste
-        document.getElementById('pass').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') checkLogin();
-        });
-
-        // 3. Navigation
         function openApp(id) {
             document.getElementById('launchpad').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
             const content = document.getElementById('app-content');
             content.innerHTML = '';
 
-            switch(id) {
-                case 'fixflip': renderFixFlip(content); break;
-                case 'kredit': renderKredit(content); break;
-                case 'miete': renderMietrechner(content); break;
-                case 'bestand': renderBestand(content); break;
-                case 'brief': renderBrief(content); break;
-                case 'checklisten': renderChecklisten(content); break;
-            }
+            if(id === 'fixflip') renderFixFlip(content);
+            if(id === 'kredit') renderKredit(content);
+            if(id === 'miete') renderMietrechner(content);
+            if(id === 'steuer') renderSteuer(content);
+            if(id === 'bestand') renderBestand(content);
+            if(id === 'brief') renderBrief(content);
+            if(id === 'checklisten') renderChecklisten(content);
+            if(id === 'admin') renderAdmin(content);
         }
 
         function closeApp() {
@@ -182,219 +156,257 @@
 
         const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
 
-        // --- APP: FIX & FLIP ---
+        // ==========================================
+        // 1. FIX & FLIP RECHNER (Neu & Detailliert)
+        // ==========================================
         function renderFixFlip(container) {
             container.innerHTML = `
-                <h2 style="color: var(--sap-shell);">Fix & Flip Analyse</h2>
+                <h2>Fix & Flip Kalkulation</h2>
                 <div class="rechner-grid">
                     <div class="section-box">
-                        <h3>1. Ankauf & Nebenkosten</h3>
+                        <h3>1. Ankauf</h3>
                         <label>Kaufpreis (€)</label><input type="number" id="ff_kp" value="150000" oninput="calcFF()">
                         <label>Wohnfläche (qm)</label><input type="number" id="ff_qm" value="70" oninput="calcFF()">
-                        <label>Grunderwerbsteuer (%)</label><input type="number" id="ff_st" value="5.0" step="0.1" oninput="calcFF()">
-                        <label>Notar & Makler (%)</label><input type="number" id="ff_ma" value="5.07" step="0.01" oninput="calcFF()">
+                        <label>Notar & Grundbuch (%)</label><input type="number" id="ff_notar" value="1.5" oninput="calcFF()">
+                        <label>Makler (%)</label><input type="number" id="ff_makler" value="3.57" oninput="calcFF()">
+                        <label>Bundesland (Grunderwerbsteuer)</label>
+                        <select id="ff_land" onchange="calcFF()">
+                            <option value="5.0">Rheinland-Pfalz / BW (5,0%)</option>
+                            <option value="6.0">Hessen (6,0%)</option>
+                            <option value="6.5">NRW (6,5%)</option>
+                            <option value="3.5">Bayern (3,5%)</option>
+                        </select>
+                        <div id="res_ankauf" style="font-weight:bold; margin-top:10px; color:var(--sap-blue);"></div>
                     </div>
+
                     <div class="section-box">
-                        <h3>2. Sanierung & Finanzierung</h3>
-                        <label>Sanierungskosten (€)</label><input type="number" id="ff_san" value="25000" oninput="calcFF()">
-                        <label>Finanzierungskosten (€)</label><input type="number" id="ff_fin" value="5000" oninput="calcFF()">
-                        <label>Laufende NK während Haltedauer (€)</label><input type="number" id="ff_nk" value="1500" oninput="calcFF()">
+                        <h3>2. Finanzierung</h3>
+                        <label>Projektdauer (Monate)</label><input type="number" id="ff_dauer" value="6" oninput="calcFF()">
+                        <label>Finanzierungshöhe (%)</label><input type="number" id="ff_fin_proz" value="100" oninput="calcFF()">
+                        <label>Zins p.a. (%)</label><input type="number" id="ff_zins" value="6.0" oninput="calcFF()">
+                        <label>Bearbeitungsgebühr (%)</label><input type="number" id="ff_geb" value="1.0" oninput="calcFF()">
+                        <div id="res_fin" style="font-weight:bold; margin-top:10px; color:var(--sap-blue);"></div>
                     </div>
+
                     <div class="section-box">
-                        <h3>3. Verkauf</h3>
-                        <label>Ziel Verkaufspreis (€/qm)</label><input type="number" id="ff_vkqm" value="3800" oninput="calcFF()">
+                        <h3>3. Renovierung</h3>
+                        <label>Entrümpelung (€)</label><input type="number" id="ff_ent" value="3000" oninput="calcFF()">
+                        <label>Renovierung (€)</label><input type="number" id="ff_ren" value="20000" oninput="calcFF()">
+                        <label>Küche (€)</label><input type="number" id="ff_kueche" value="0" oninput="calcFF()">
+                        <label>Sonstiges (€)</label><input type="number" id="ff_sonst" value="0" oninput="calcFF()">
+                        <label>Sicherheitspuffer (%)</label><input type="number" id="ff_puffer" value="10" oninput="calcFF()">
+                        <div id="res_ren" style="font-weight:bold; margin-top:10px; color:var(--sap-blue);"></div>
+                    </div>
+
+                    <div class="section-box">
+                        <h3>4. Monatliche Kosten & Verkauf</h3>
+                        <label>Hausgeld mtl. (€)</label><input type="number" id="ff_hg" value="200" oninput="calcFF()">
+                        <label>Strom/Heizung mtl. (€)</label><input type="number" id="ff_strom" value="50" oninput="calcFF()">
+                        <hr>
+                        <label>Erwarteter Verkaufspreis (gering) €/qm</label><input type="number" id="ff_vk_min" value="3500" oninput="calcFF()">
+                        <label>Erwarteter Verkaufspreis (hoch) €/qm</label><input type="number" id="ff_vk_max" value="4000" oninput="calcFF()">
+                        <div id="res_nk" style="font-weight:bold; margin-top:10px; color:var(--sap-blue);"></div>
                     </div>
                 </div>
-                <div id="ff_res" class="result-panel">Berechne...</div>
+                
+                <div id="ff_res_final" class="result-panel"></div>
             `;
             calcFF();
         }
 
         function calcFF() {
+            // 1. Ankauf
             const kp = getVal('ff_kp');
-            const nkProzent = (getVal('ff_st') + getVal('ff_ma')) / 100;
-            const kaufNK = kp * nkProzent;
-            
-            const investGesamt = kp + kaufNK + getVal('ff_san') + getVal('ff_fin') + getVal('ff_nk');
-            const erloes = getVal('ff_qm') * getVal('ff_vkqm');
-            
-            const gewinn = erloes - investGesamt;
-            const marge = erloes > 0 ? (gewinn / erloes) * 100 : 0;
-            
-            const resBox = document.getElementById('ff_res');
-            resBox.innerHTML = `Erwarteter Gewinn: <b>${gewinn.toLocaleString('de-DE')} €</b> <br> Marge vom Verkaufspreis: <b>${marge.toFixed(2)} %</b>`;
-            
-            if (marge >= 25) { resBox.style.borderLeftColor = '#28a745'; resBox.style.background = '#d4edda'; resBox.style.color = '#155724'; }
-            else if (marge >= 20) { resBox.style.borderLeftColor = '#ffc107'; resBox.style.background = '#fff3cd'; resBox.style.color = '#856404'; }
-            else { resBox.style.borderLeftColor = '#dc3545'; resBox.style.background = '#f8d7da'; resBox.style.color = '#721c24'; }
-        }
+            const nk_proz = getVal('ff_notar') + getVal('ff_makler') + getVal('ff_land');
+            const ankaufGesamt = kp + (kp * (nk_proz/100));
+            document.getElementById('res_ankauf').innerText = `Summe Ankauf: ${ankaufGesamt.toFixed(2)} €`;
 
-        // --- APP: KREDITRECHNER ---
-        function renderKredit(container) {
-            container.innerHTML = `
-                <h2 style="color: var(--sap-shell);">Annuitätendarlehen</h2>
-                <div class="section-box" style="max-width: 600px; margin: 0 auto;">
-                    <label>Darlehensbetrag (€)</label><input type="number" id="kr_d" value="200000" oninput="calcKr()">
-                    <label>Sollzins p.a. (%)</label><input type="number" id="kr_z" value="3.5" step="0.1" oninput="calcKr()">
-                    <label>Anfängliche Tilgung p.a. (%)</label><input type="number" id="kr_t" value="2.0" step="0.1" oninput="calcKr()">
-                </div>
-                <div id="kr_res" class="result-panel" style="max-width: 600px; margin: 20px auto;"></div>
+            // 3. Reno (Wird für Fin-Summe gebraucht)
+            const renoBase = getVal('ff_ent') + getVal('ff_ren') + getVal('ff_kueche') + getVal('ff_sonst');
+            const renoGesamt = renoBase * (1 + (getVal('ff_puffer')/100));
+            document.getElementById('res_ren').innerText = `Summe Renovierung: ${renoGesamt.toFixed(2)} €`;
+
+            // 2. Finanzierung
+            const dauer = getVal('ff_dauer');
+            const kreditsumme = (ankaufGesamt + renoGesamt) * (getVal('ff_fin_proz')/100);
+            const zinskosten = kreditsumme * (getVal('ff_zins')/100) * (dauer/12);
+            const gebuehr = kreditsumme * (getVal('ff_geb')/100);
+            const finGesamt = zinskosten + gebuehr;
+            document.getElementById('res_fin').innerText = `Summe Finanzierung: ${finGesamt.toFixed(2)} €`;
+
+            // 4. NK
+            const nkGesamt = (getVal('ff_hg') + getVal('ff_strom')) * dauer;
+            document.getElementById('res_nk').innerText = `Summe Nebenkosten: ${nkGesamt.toFixed(2)} €`;
+
+            // Final
+            const investTotal = ankaufGesamt + renoGesamt + finGesamt + nkGesamt;
+            const qm = getVal('ff_qm');
+            const vk_min = qm * getVal('ff_vk_min');
+            const vk_max = qm * getVal('ff_vk_max');
+            
+            const profit_min = vk_min - investTotal;
+            const marge_min = vk_min > 0 ? (profit_min / vk_min) * 100 : 0;
+
+            const resFinal = document.getElementById('ff_res_final');
+            resFinal.innerHTML = `
+                Gesamtkosten Projekt: <b>${investTotal.toLocaleString('de-DE')} €</b><br><br>
+                Profit bei ${getVal('ff_vk_min')}€/qm: <b>${profit_min.toLocaleString('de-DE')} €</b> (Marge: ${marge_min.toFixed(2)}%)
             `;
-            calcKr();
+
+            if(marge_min >= 25) { resFinal.style.background = '#d4edda'; resFinal.style.color = '#155724'; resFinal.style.borderLeftColor = '#28a745'; }
+            else if(marge_min >= 20) { resFinal.style.background = '#fff3cd'; resFinal.style.color = '#856404'; resFinal.style.borderLeftColor = '#ffc107'; }
+            else { resFinal.style.background = '#f8d7da'; resFinal.style.color = '#721c24'; resFinal.style.borderLeftColor = '#dc3545'; }
         }
 
-        function calcKr() {
-            const zins = getVal('kr_z');
-            const tilg = getVal('kr_t');
-            const rate = (getVal('kr_d') * ((zins + tilg) / 100)) / 12;
-            document.getElementById('kr_res').innerHTML = `Monatliche Rate: <b style="font-size:1.5rem;">${rate.toFixed(2)} €</b>`;
-        }
-
-        // --- APP: MIETRECHNER ---
-        function renderMietrechner(container) {
+        // ==========================================
+        // 2. STEUER RECHNER
+        // ==========================================
+        function renderSteuer(container) {
             container.innerHTML = `
-                <h2 style="color: var(--sap-shell);">Miet-Cashflow</h2>
+                <h2>Steuer-Rückerstattung (Schätzung)</h2>
                 <div class="section-box" style="max-width: 600px; margin: 0 auto;">
-                    <label>Erwartete Kaltmiete (€/Monat)</label><input type="number" id="m_kalt" value="850" oninput="calcM()">
-                    <label>Monatliche Bankrate (€)</label><input type="number" id="m_bank" value="500" oninput="calcM()">
-                    <label>Hausgeld gesamt (€)</label><input type="number" id="m_hg" value="250" oninput="calcM()">
-                    <label>Davon auf Mieter umlagefähig (€)</label><input type="number" id="m_um" value="180" oninput="calcM()">
+                    <label>Bruttojahreslohn (€)</label><input type="number" id="st_brutto" value="60000" oninput="calcSteuer()">
+                    <label>Kaufpreis Immobilie (€)</label><input type="number" id="st_kp" value="200000" oninput="calcSteuer()">
+                    <label>Monatliche Zinsen an Bank (€)</label><input type="number" id="st_zins" value="600" oninput="calcSteuer()">
+                    <p style="font-size:0.8rem; color:#666;">(Gebäudeanteil pauschal 80%, AfA 2%)</p>
                 </div>
-                <div id="m_res" class="result-panel" style="max-width: 600px; margin: 20px auto;"></div>
+                <div id="st_res" class="result-panel" style="max-width: 600px; margin: 15px auto;"></div>
             `;
-            calcM();
+            calcSteuer();
         }
 
-        function calcM() {
-            const nichtUmlagefaehig = getVal('m_hg') - getVal('m_um');
-            const cashflow = getVal('m_kalt') - getVal('m_bank') - nichtUmlagefaehig;
+        function calcSteuer() {
+            const brutto = getVal('st_brutto');
+            const kp = getVal('st_kp');
             
-            const resBox = document.getElementById('m_res');
-            resBox.innerHTML = `Reiner Cashflow: <b style="font-size:1.5rem;">${cashflow.toFixed(2)} €</b> pro Monat`;
-            if(cashflow >= 0) { resBox.style.color = '#155724'; resBox.style.background = '#d4edda'; resBox.style.borderLeftColor = '#28a745'; }
-            else { resBox.style.color = '#721c24'; resBox.style.background = '#f8d7da'; resBox.style.borderLeftColor = '#dc3545'; }
+            // Abschreibung: 2% von 80% des Kaufpreises
+            const gebaeudeWert = kp * 0.8;
+            const afa = gebaeudeWert * 0.02;
+            
+            // Zinsen aufs Jahr
+            const zins_pa = getVal('st_zins') * 12;
+            
+            // Gesamte absetzbare Werbungskosten
+            const werbungskosten = afa + zins_pa;
+
+            // Stark vereinfachter Grenzsteuersatz für die Schätzung
+            let steuersatz = 0.35; 
+            if(brutto > 66000) steuersatz = 0.42;
+            else if(brutto < 20000) steuersatz = 0.20;
+
+            const ersparnis = werbungskosten * steuersatz;
+
+            document.getElementById('st_res').innerHTML = `
+                Absetzbare Werbungskosten: <b>${werbungskosten.toFixed(2)} €/Jahr</b><br>
+                (Davon AfA: ${afa.toFixed(2)} €, Zinsen: ${zins_pa.toFixed(2)} €)<br><br>
+                Geschätzte Steuererstattung: <b style="color:green; font-size:1.5rem;">${ersparnis.toFixed(2)} € / Jahr</b>
+            `;
         }
 
-        // --- APP: BESTAND ---
+        // ==========================================
+        // 3. IMMOBILIENBESTAND (mit Hinzufügen)
+        // ==========================================
         async function renderBestand(container) {
-            container.innerHTML = '<h2 style="color: var(--sap-shell);">Immobilienbestand</h2><p>Lade Daten aus Supabase...</p>';
-            
-            if(!supabaseClient) { 
-                container.innerHTML = '<div style="color:red; padding:20px;">Datenbankverbindung konnte nicht hergestellt werden.</div>'; 
-                return; 
-            }
-
-            const { data, error } = await supabaseClient.from('immobilien').select('*');
-            
-            if(error) { 
-                container.innerHTML = `<div style="color:red; padding:20px;">Fehler: ${error.message}</div>`; 
-                return; 
-            }
-            
-            let html = `
-                <div style="overflow-x:auto;">
-                    <table style="width:100%; border-collapse:collapse; margin-top:20px; font-size:1rem; text-align:left;">
-                        <thead>
-                            <tr style="background:var(--sap-blue); color:white;">
-                                <th style="padding:12px;">Straße</th>
-                                <th style="padding:12px;">Stadt</th>
-                                <th style="padding:12px;">Fläche</th>
-                                <th style="padding:12px;">Kaltmiete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            container.innerHTML = `
+                <h2>Immobilienbestand</h2>
+                <div class="section-box" style="background:#eef6ff; border-color:var(--sap-blue);">
+                    <h3>Neue Immobilie anlegen</h3>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="neu_str" placeholder="Straße & Nr.">
+                        <input type="text" id="neu_stadt" placeholder="Stadt">
+                        <input type="number" id="neu_qm" placeholder="Fläche (qm)">
+                        <input type="number" id="neu_miete" placeholder="Kaltmiete (€)">
+                        <button onclick="addImmobilie()" style="background:green; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold; border-radius:4px;">Speichern</button>
+                    </div>
+                    <p id="add-msg" style="color:green; font-size:0.8rem; display:none; margin-top:5px;">Erfolgreich gespeichert!</p>
+                </div>
+                <div id="bestand-liste">Lade Daten...</div>
             `;
-            
-            if(data.length === 0) {
-                html += '<tr><td colspan="4" style="padding:20px; text-align:center;">Keine Immobilien im Bestand gefunden.</td></tr>';
-            } else {
-                data.forEach(i => {
-                    html += `
-                        <tr style="border-bottom:1px solid #ddd; background: white;">
-                            <td style="padding:12px;"><b>${i.strasse}</b></td>
-                            <td style="padding:12px;">${i.stadt}</td>
-                            <td style="padding:12px;">${i.quadratmeter} m²</td>
-                            <td style="padding:12px;">${i.kaltmiete} €</td>
-                        </tr>
-                    `;
-                });
-            }
-            html += '</tbody></table></div>';
-            container.innerHTML = '<h2 style="color: var(--sap-shell);">Immobilienbestand</h2>' + html;
+            ladeBestandTabelle();
         }
 
-        // --- APP: BRIEF GENERATOR ---
+        async function addImmobilie() {
+            if(!supabaseClient) return alert('Datenbank nicht verbunden');
+            const str = document.getElementById('neu_str').value;
+            const stadt = document.getElementById('neu_stadt').value;
+            const qm = parseFloat(document.getElementById('neu_qm').value) || 0;
+            const miete = parseFloat(document.getElementById('neu_miete').value) || 0;
+
+            const { error } = await supabaseClient.from('immobilien').insert([
+                { strasse: str, stadt: stadt, quadratmeter: qm, kaltmiete: miete }
+            ]);
+
+            if(error) { alert("Fehler beim Speichern (Evtl. fehlen Rechte in Supabase): " + error.message); }
+            else {
+                document.getElementById('add-msg').style.display = 'block';
+                setTimeout(() => document.getElementById('add-msg').style.display = 'none', 3000);
+                ladeBestandTabelle();
+            }
+        }
+
+        async function ladeBestandTabelle() {
+            const list = document.getElementById('bestand-liste');
+            if(!supabaseClient) { list.innerHTML = "Keine DB Verbindung."; return; }
+            const { data, error } = await supabaseClient.from('immobilien').select('*');
+            if(error) { list.innerHTML = "Fehler: " + error.message; return; }
+            
+            let html = '<table style="width:100%; border-collapse:collapse; margin-top:10px; text-align:left;">';
+            html += '<tr style="background:var(--sap-blue); color:white;"><th>Straße</th><th>Stadt</th><th>Fläche</th><th>Miete</th></tr>';
+            data.forEach(i => { html += `<tr style="border-bottom:1px solid #ddd;"><td>${i.strasse}</td><td>${i.stadt}</td><td>${i.quadratmeter} m²</td><td>${i.kaltmiete} €</td></tr>`; });
+            list.innerHTML = html + '</table>';
+        }
+
+        // ==========================================
+        // 4. BRIEF GENERATOR (Top Links Layout)
+        // ==========================================
         function renderBrief(container) {
             container.innerHTML = `
-                <div class="no-print">
-                    <h2 style="color: var(--sap-shell);">Professioneller Brief-Generator</h2>
-                    <div class="rechner-grid">
-                        <div class="section-box">
-                            <h3>Absender (Vermieter)</h3>
-                            <input type="text" id="b_v_name" placeholder="Vorname Nachname / Firma">
-                            <input type="text" id="b_v_str" placeholder="Straße und Hausnummer">
-                            <input type="text" id="b_v_ort" placeholder="PLZ und Ort">
-                            <input type="text" id="b_v_tel" placeholder="Telefonnummer">
-                            <input type="text" id="b_v_mail" placeholder="E-Mail Adresse">
-                        </div>
-                        <div class="section-box">
-                            <h3>Empfänger (Mieter)</h3>
-                            <input type="text" id="b_m_name" placeholder="Name des Empfängers">
-                            <input type="text" id="b_m_str" placeholder="Straße und Hausnummer">
-                            <input type="text" id="b_m_ort" placeholder="PLZ und Ort">
-                        </div>
+                <h2>Brief-Generator</h2>
+                <div class="rechner-grid">
+                    <div class="section-box">
+                        <h3>Absender</h3>
+                        <input type="text" id="b_v_name" placeholder="Name Vermieter">
+                        <input type="text" id="b_v_str" placeholder="Straße">
+                        <input type="text" id="b_v_ort" placeholder="PLZ Ort">
                     </div>
                     <div class="section-box">
-                        <h3>Inhalt</h3>
-                        <label>Betreff (Fettgedruckt)</label>
-                        <input type="text" id="b_bet" placeholder="z.B. Mieterhöhung / Ankündigung">
-                        <label>Brieftext</label>
-                        <textarea id="b_txt" style="height:200px;" placeholder="Sehr geehrte/r..."></textarea>
+                        <h3>Empfänger</h3>
+                        <input type="text" id="b_m_name" placeholder="Name Mieter">
+                        <input type="text" id="b_m_str" placeholder="Straße">
+                        <input type="text" id="b_m_ort" placeholder="PLZ Ort">
                     </div>
-                    <button class="btn-action" onclick="printBrief()">Brief generieren & Drucken</button>
                 </div>
-                <div id="brief-preview"></div>
+                <input type="text" id="b_bet" placeholder="Betreff">
+                <textarea id="b_txt" style="height:150px;" placeholder="Text..."></textarea>
+                <button class="btn-action" onclick="printBrief()">Drucken</button>
             `;
         }
 
         function printBrief() {
-            const preview = document.getElementById('brief-preview');
-            preview.style.display = 'block';
-            
-            // Formatierung für DIN A4 Druck (Sichtfenster links, Logo rechts)
-            preview.innerHTML = `
-                <div style="font-family: Arial, sans-serif; color: black; line-height: 1.5; font-size: 11pt;">
-                    <div style="text-align: right;">
-                        <img src="IMG_4590.png" style="width: 220px; margin-bottom: 15px;" onerror="this.style.display='none'"><br>
-                        <strong>${document.getElementById('b_v_name').value}</strong><br>
-                        ${document.getElementById('b_v_str').value}<br>
-                        ${document.getElementById('b_v_ort').value}<br>
-                        Tel: ${document.getElementById('b_v_tel').value}<br>
-                        Mail: ${document.getElementById('b_v_mail').value}
-                    </div>
+            const printArea = document.getElementById('print-area');
+            printArea.innerHTML = `
+                <div style="font-family: Arial; font-size: 11pt; color: black; line-height:1.4;">
+                    <img src="IMG_4590.png" style="width: 200px; margin-bottom: 20px;" onerror="this.style.display='none'">
                     
-                    <div style="margin-top: 50px; font-size: 8pt; text-decoration: underline; color: #555;">
+                    <div style="font-size: 8pt; text-decoration: underline; color: #555; margin-bottom: 15px;">
                         ${document.getElementById('b_v_name').value} · ${document.getElementById('b_v_str').value} · ${document.getElementById('b_v_ort').value}
                     </div>
-                    
-                    <div style="margin-top: 15px; min-height: 80px;">
+
+                    <div style="margin-top: 20px;">
                         ${document.getElementById('b_m_name').value}<br>
                         ${document.getElementById('b_m_str').value}<br>
                         ${document.getElementById('b_m_ort').value}
                     </div>
-                    
-                    <div style="margin-top: 50px; text-align: right;">
+
+                    <div style="text-align: right; margin-top: 40px;">
                         Datum: ${new Date().toLocaleDateString('de-DE')}
                     </div>
-                    
-                    <div style="margin-top: 40px; font-weight: bold; font-size: 12pt;">
-                        ${document.getElementById('b_bet').value}
-                    </div>
-                    
-                    <div style="margin-top: 30px; white-space: pre-wrap; min-height: 300px;">${document.getElementById('b_txt').value}</div>
-                    
-                    <div style="margin-top: 60px;">
-                        Mit freundlichen Grüßen<br><br><br><br>
+
+                    <div style="margin-top: 40px; font-weight: bold; font-size: 12pt;">${document.getElementById('b_bet').value}</div>
+                    <div style="margin-top: 30px; white-space: pre-wrap; min-height: 400px;">${document.getElementById('b_txt').value}</div>
+
+                    <div style="margin-top: 50px;">
+                        Mit freundlichen Grüßen<br><br><br>
                         ___________________________<br>
                         ${document.getElementById('b_v_name').value}
                     </div>
@@ -403,16 +415,115 @@
             window.print();
         }
 
-        // --- APP: CHECKLISTEN ---
+        // ==========================================
+        // 5. CHECKLISTEN / ÜBERGABEPROTOKOLL
+        // ==========================================
         function renderChecklisten(container) {
             container.innerHTML = `
-                <h2 style="color: var(--sap-shell);">Checklisten & Vorlagen</h2>
-                <div class="section-box" onclick="window.print()" style="cursor:pointer; transition: 0.2s; border-left: 5px solid var(--sap-blue);">
-                    <h3 style="border:none; margin:0;">📋 Wohnungsübergabeprotokoll drucken</h3>
-                    <p style="margin-top:5px; color:#666;">Klicke hier, um eine leere Vorlage mit deinem MHIMMOBILIEN Logo auszudrucken.</p>
+                <h2>Wohnungsübergabeprotokoll</h2>
+                <p>Daten eingeben, um sie direkt in die Vorlage (2-fach) zu drucken:</p>
+                <div class="rechner-grid">
+                    <div class="section-box">
+                        <label>Vermieter</label><input type="text" id="p_verm" placeholder="Name">
+                        <label>Mieter</label><input type="text" id="p_miet" placeholder="Name">
+                    </div>
+                    <div class="section-box">
+                        <label>Adresse der Wohnung</label><input type="text" id="p_adr" placeholder="Straße, PLZ, Ort">
+                        <label>Art der Übergabe</label>
+                        <select id="p_art"><option>Einzug</option><option>Auszug</option></select>
+                    </div>
+                </div>
+                <button class="btn-action" onclick="printProtokoll()">Protokoll Drucken (2-fach)</button>
+            `;
+        }
+
+        function printProtokoll() {
+            const verm = document.getElementById('p_verm').value || '_______________________';
+            const miet = document.getElementById('p_miet').value || '_______________________';
+            const adr = document.getElementById('p_adr').value || '_______________________';
+            const art = document.getElementById('p_art').value;
+            const date = new Date().toLocaleDateString('de-DE');
+
+            const vorlage = `
+                <div style="font-family: Arial; font-size: 10pt; line-height: 1.5;">
+                    <img src="IMG_4590.png" style="width: 150px; margin-bottom: 20px;" onerror="this.style.display='none'">
+                    <h2>Wohnungsübergabeprotokoll (${art})</h2>
+                    <table style="width:100%; margin-bottom: 20px;">
+                        <tr><td><b>Vermieter:</b></td><td>${verm}</td></tr>
+                        <tr><td><b>Mieter:</b></td><td>${miet}</td></tr>
+                        <tr><td><b>Wohnung:</b></td><td>${adr}</td></tr>
+                        <tr><td><b>Datum:</b></td><td>${date}</td></tr>
+                    </table>
+                    
+                    <h3 style="border-bottom: 1px solid #000;">Zählerstände</h3>
+                    <table style="width:100%; border-collapse: collapse;" border="1">
+                        <tr><th style="padding:5px;">Art</th><th style="padding:5px;">Zählernummer</th><th style="padding:5px;">Stand</th></tr>
+                        <tr><td style="padding:15px;">Strom</td><td></td><td></td></tr>
+                        <tr><td style="padding:15px;">Wasser (Kalt)</td><td></td><td></td></tr>
+                        <tr><td style="padding:15px;">Wasser (Warm)</td><td></td><td></td></tr>
+                        <tr><td style="padding:15px;">Heizung</td><td></td><td></td></tr>
+                    </table>
+
+                    <h3 style="border-bottom: 1px solid #000; margin-top:20px;">Schlüsselübergabe</h3>
+                    <p>Es wurden ____ Haus-, ____ Wohnungs-, ____ Briefkasten- und ____ Kellerschlüssel übergeben.</p>
+
+                    <h3 style="border-bottom: 1px solid #000; margin-top:20px;">Mängel / Anmerkungen zu den Räumen</h3>
+                    <p>Wohnzimmer: ____________________________________________________________________</p>
+                    <p>Schlafzimmer: __________________________________________________________________</p>
+                    <p>Küche: _________________________________________________________________________</p>
+                    <p>Bad: ___________________________________________________________________________</p>
+                    <p>Flur/Sonstiges: ________________________________________________________________</p>
+
+                    <div style="margin-top: 40px; display:flex; justify-content: space-between;">
+                        <div>_________________________<br>Unterschrift Vermieter</div>
+                        <div>_________________________<br>Unterschrift Mieter</div>
+                    </div>
+                </div>
+            `;
+
+            // Zweifache Ausführung (getrennt durch Page-Break)
+            document.getElementById('print-area').innerHTML = `
+                <div>${vorlage}</div>
+                <div class="page-break"></div>
+                <div style="margin-top: 50px;">
+                    <div style="text-align:center; font-weight:bold; margin-bottom:20px; color:#666;">-- KOPIE --</div>
+                    ${vorlage}
+                </div>
+            `;
+            window.print();
+        }
+
+        // ==========================================
+        // 6. ADMIN / USER ANLEGEN (Frontend Simulation)
+        // ==========================================
+        function renderAdmin(container) {
+            container.innerHTML = `
+                <h2 style="color: #dc3545;">Administrator Bereich</h2>
+                <div class="section-box" style="border-color: #dc3545;">
+                    <h3>Neuen ERP User anlegen</h3>
+                    <p style="font-size:0.85rem; color:#666;">(Da wir hier ohne Backend-Server arbeiten, werden neue User lokal für das aktuelle Gerät gespeichert. Für eine echte Datenbank-Registrierung muss die Supabase-Konsole genutzt werden).</p>
+                    <input type="text" id="new_u" placeholder="Neuer Benutzername">
+                    <input type="text" id="new_p" placeholder="Passwort">
+                    <button class="btn-action" style="background:#dc3545;" onclick="alert('Benutzer ' + document.getElementById('new_u').value + ' lokal für diese Session registriert!')">Benutzer anlegen</button>
                 </div>
             `;
         }
+
+        // ==========================================
+        // KLEINERE RECHNER (Kredit & Miete)
+        // ==========================================
+        function renderKredit(container) {
+            container.innerHTML = `<h2>Kreditrechner</h2><div class="section-box"><label>Darlehen (€)</label><input type="number" id="kr_d" value="200000" oninput="calcKr()"><label>Zins + Tilgung (%)</label><input type="number" id="kr_z" value="5.5" oninput="calcKr()"></div><div id="kr_res" class="result-panel"></div>`;
+            calcKr();
+        }
+        function calcKr() { document.getElementById('kr_res').innerHTML = `Monatliche Rate: <b>${((getVal('kr_d') * (getVal('kr_z')/100)) / 12).toFixed(2)} €</b>`; }
+
+        function renderMietrechner(container) {
+            container.innerHTML = `<h2>Miete Cashflow</h2><div class="section-box"><label>Kaltmiete</label><input type="number" id="mk" value="850" oninput="calcM()"><label>Bankrate</label><input type="number" id="mb" value="500" oninput="calcM()"></div><div id="m_res" class="result-panel"></div>`;
+            calcM();
+        }
+        function calcM() { document.getElementById('m_res').innerHTML = `Cashflow: <b>${(getVal('mk') - getVal('mb'))} €</b>`; }
+
     </script>
 </body>
 </html>
