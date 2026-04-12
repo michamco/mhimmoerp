@@ -18,108 +18,93 @@
 
         body { 
             background-color: var(--sap-bg); 
-            font-family: "72", "72full", Arial, Helvetica, sans-serif; 
+            font-family: Arial, Helvetica, sans-serif; 
             margin: 0; padding: 0; color: var(--text-color);
         }
 
-        /* Login Layout */
+        /* Login */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--sap-shell); }
-        .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center; width: 350px; }
-        .login-box img { width: 180px; margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center; width: 320px; }
+        .login-box img { width: 150px; margin-bottom: 20px; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; }
         .login-box button { width: 100%; padding: 12px; background: var(--sap-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
-        /* Shell Header */
-        header { background: var(--sap-shell); height: 48px; display: flex; align-items: center; padding: 0 20px; color: white; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        /* Header */
+        header { background: var(--sap-shell); height: 48px; display: flex; align-items: center; padding: 0 20px; color: white; justify-content: space-between; }
         .header-logo { height: 32px; filter: brightness(0) invert(1); }
-        .header-title { font-weight: bold; font-size: 1.1rem; }
 
         /* Launchpad */
-        .launchpad { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; max-width: 1400px; margin: 0 auto; }
+        .launchpad { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
         .tile { 
-            background: var(--card-bg); padding: 16px; height: 130px; cursor: pointer; 
-            box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
+            background: var(--card-bg); padding: 16px; height: 120px; cursor: pointer; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px;
             display: flex; flex-direction: column; justify-content: space-between; 
-            text-decoration: none; color: inherit; transition: all 0.2s; border-radius: 4px;
+            text-decoration: none; color: inherit; transition: 0.2s;
         }
-        .tile:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-bottom: 4px solid var(--sap-blue); }
-        .tile h3 { font-size: 1rem; margin: 0; color: var(--sap-blue); font-weight: 600; }
-        .tile-icon { font-size: 2rem; align-self: flex-end; opacity: 0.8; }
+        .tile:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-bottom: 4px solid var(--sap-blue); }
+        .tile h3 { font-size: 0.95rem; margin: 0; color: var(--sap-blue); }
+        .tile-icon { font-size: 1.8rem; align-self: flex-end; }
 
-        /* App Container Layout */
+        /* App Layout */
         #app-container { display: none; padding: 20px; max-width: 1100px; margin: 20px auto; }
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .rechner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .section-box { border: 1px solid #eee; padding: 15px; border-radius: 6px; margin-bottom: 10px; }
+        .section-box h3 { margin-top: 0; font-size: 1rem; color: var(--sap-blue); border-bottom: 1px solid #eee; padding-bottom: 5px; }
         
-        /* Rechner Design */
-        .rechner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #6a6d70; }
-        input, select, textarea { 
-            width: 100%; padding: 10px; border: 1px solid var(--border-color); 
-            border-radius: 4px; font-size: 1rem; box-sizing: border-box; 
-        }
-        input:focus { border-color: var(--sap-blue); outline: none; }
+        label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #666; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; margin-bottom: 10px; }
         
-        .result-panel { 
-            background: #f8f9fa; padding: 20px; border-radius: 8px; 
-            text-align: center; margin-top: 20px; border-left: 5px solid var(--sap-blue);
-        }
-        .result-value { font-size: 1.5rem; font-weight: bold; color: var(--sap-blue); }
+        .result-panel { background: #f0f7ff; padding: 20px; border-radius: 6px; text-align: center; border-left: 5px solid var(--sap-blue); margin-top: 15px; }
+        .btn-action { background: var(--sap-blue); color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
 
-        /* Button & Print */
-        .btn-main { background: var(--sap-blue); color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .no-print { display: inline-block; }
-
+        #brief-preview { display: none; margin-top: 30px; padding: 60px; background: white; border: 1px solid #ddd; min-height: 800px; }
+        
         @media print {
-            .no-print, header, .btn-main { display: none !important; }
+            .no-print { display: none !important; }
             body { background: white; }
-            #app-container { margin: 0; padding: 0; max-width: 100%; }
-            .card { box-shadow: none; border: none; padding: 0; }
+            #app-container { margin: 0; max-width: 100%; }
+            .card { box-shadow: none; border: none; }
         }
-
-        /* Brief Layout */
-        #brief-preview { display: none; margin-top: 40px; padding: 50px; border: 1px solid #eee; background: white; min-height: 842px; position: relative; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-box">
-            <img src="IMG_4590.png" alt="MHIMMOBILIEN">
-            <h2 style="color: #354a5f;">S/4HANA ERP</h2>
+            <img src="IMG_4590.png" alt="Logo">
+            <h2>ERP Login</h2>
             <input type="text" id="user" placeholder="Benutzername">
             <input type="password" id="pass" placeholder="Passwort">
-            <button onclick="checkLogin()">Login</button>
-            <p id="login-err" style="color:red; font-size: 0.8rem; display:none; margin-top:10px;">Zugriff verweigert.</p>
+            <button onclick="checkLogin()">Einloggen</button>
+            <p id="login-err" style="color:red; display:none; margin-top:10px;">Login fehlgeschlagen.</p>
         </div>
     </div>
 
     <div id="main-ui" style="display:none;">
         <header>
             <div style="display:flex; align-items:center;">
-                <img src="IMG_4590.png" class="header-logo" alt="MH">
-                <span class="header-title" style="margin-left: 15px;">MHIMMOBILIEN Home</span>
+                <img src="IMG_4590.png" class="header-logo">
+                <span style="margin-left:15px; font-weight:bold;">MHIMMOBILIEN ERP</span>
             </div>
-            <button onclick="location.reload()" style="background:transparent; border:1px solid white; color:white; border-radius:4px; padding:4px 10px; cursor:pointer;">Abmelden</button>
+            <button onclick="location.reload()" style="background:none; border:1px solid white; color:white; border-radius:4px; cursor:pointer; padding:4px 8px;">Logout</button>
         </header>
 
         <div id="launchpad" class="launchpad">
-            <a href="https://versteigerungspool.de/amtsgerichte/ludwigshafen.34341" target="_blank" class="tile"><h3>ZVG Ludwigshafen</h3><div class="tile-icon">🏛️</div></a>
-            <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Frankenthal</h3><div class="tile-icon">🏛️</div></a>
-            <a href="https://versteigerungspool.de/amtsgerichte/mannheim.2739/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Mannheim</h3><div class="tile-icon">🏛️</div></a>
-            <a href="https://baufinanzierung.check24.de/baufinanzierung/immobilienbewertung?deviceoutput=desktop" target="_blank" class="tile"><h3>Check24 Bewertung</h3><div class="tile-icon">📈</div></a>
+            <a href="https://versteigerungspool.de/amtsgerichte/ludwigshafen.34341" target="_blank" class="tile"><h3>ZVG LU</h3><div class="tile-icon">🏛️</div></a>
+            <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG FT</h3><div class="tile-icon">🏛️</div></a>
+            <a href="https://versteigerungspool.de/amtsgerichte/mannheim.2739/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG MA</h3><div class="tile-icon">🏛️</div></a>
             
-            <div class="tile" onclick="openApp('fixflip')"><h3>Fix & Flip Rechner</h3><div class="tile-icon">🛠️</div></div>
+            <div class="tile" onclick="openApp('fixflip')"><h3>Fix & Flip</h3><div class="tile-icon">🛠️</div></div>
             <div class="tile" onclick="openApp('kredit')"><h3>Kreditrechner</h3><div class="tile-icon">💶</div></div>
             <div class="tile" onclick="openApp('miete')"><h3>Mietrechner</h3><div class="tile-icon">📊</div></div>
-            <div class="tile" onclick="openApp('bestand')"><h3>Immobilienbestand</h3><div class="tile-icon">🏢</div></div>
-            <div class="tile" onclick="openApp('brief')"><h3>Vermieter-Brief</h3><div class="tile-icon">✉️</div></div>
+            <div class="tile" onclick="openApp('bestand')"><h3>Bestand</h3><div class="tile-icon)🏢</div></div>
+            <div class="tile" onclick="openApp('brief')"><h3>Briefe</h3><div class="tile-icon">✉️</div></div>
             <div class="tile" onclick="openApp('checklisten')"><h3>Checklisten</h3><div class="tile-icon">📋</div></div>
-            <div class="tile" onclick="openApp('admin')"><h3>System-Admin</h3><div class="tile-icon">⚙️</div></div>
         </div>
 
         <div id="app-container">
-            <button class="no-print btn-main" style="margin-bottom:20px; background:#6a6d70;" onclick="closeApp()">⬅ Zurück zum Launchpad</button>
+            <button class="no-print" style="margin-bottom:15px;" onclick="closeApp()">⬅ Zurück</button>
             <div id="app-content" class="card"></div>
         </div>
     </div>
