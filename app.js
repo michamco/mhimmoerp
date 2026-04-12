@@ -3,6 +3,125 @@ const supabaseUrl = 'https://dofofjbjgbmpxjtlolzi.supabase.co'; // BITTE DEINE U
 const supabaseKey = 'sb_publishable_grgVSWN2j2zPAWGq_-qUug_yzc0QGV-'; // Dein öffentlicher Key
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+// Routing-Logik für alle Kacheln
+function openApp(appName) {
+    document.getElementById('launchpad').style.display = 'none';
+    document.getElementById('app-container').style.display = 'block';
+    const content = document.getElementById('app-content');
+    content.innerHTML = ''; 
+
+    switch(appName) {
+        case 'fixflip': renderFixFlipApp(content); break;
+        case 'miete': renderMietrechner(content); break;
+        case 'bestand': renderBestand(content); break;
+        case 'brief': renderBriefApp(content); break;
+        case 'kredit': renderKreditrechner(content); break;
+        case 'checklisten': renderChecklisten(content); break;
+        default: content.innerHTML = "<h2>In Arbeit</h2>";
+    }
+}
+
+// --- MIETRECHNER ---
+function renderMietrechner(container) {
+    container.innerHTML = `
+        <h2>Mietrechner (Cashflow)</h2>
+        <div class="ff-section">
+            <label>Vergleichsmiete (€/qm):</label> <input type="number" id="v_miete" value="10" onchange="calcMiete()">
+            <label>Wohnfläche (qm):</label> <input type="number" id="v_qm" value="50" onchange="calcMiete()">
+            <label>Hausgeld (Gesamt):</label> <input type="number" id="v_hg" value="250" onchange="calcMiete()">
+            <label>Umlagefähig:</label> <input type="number" id="v_umlage" value="200" onchange="calcMiete()">
+            <label>Kreditrate (mtl.):</label> <input type="number" id="v_rate" value="300" onchange="calcMiete()">
+            <hr>
+            <div class="result" id="res-miete">Cashflow: 0 €</div>
+        </div>
+    `;
+}
+
+function calcMiete() {
+    const miete = parseFloat(document.getElementById('v_miete').value) * parseFloat(document.getElementById('v_qm').value);
+    const nichtUmlage = parseFloat(document.getElementById('v_hg').value) - parseFloat(document.getElementById('v_umlage').value);
+    const cashflow = miete - nichtUmlage - parseFloat(document.getElementById('v_rate').value);
+    document.getElementById('res-miete').innerHTML = `
+        Kaltmiete: ${miete.toFixed(2)} €<br>
+        Nicht umlagefähig: ${nichtUmlage.toFixed(2)} €<br>
+        <strong>Cashflow mtl.: ${cashflow.toFixed(2)} €</strong>
+    `;
+}
+
+// --- IMMOBILIENBESTAND (TABELLE) ---
+async function renderBestand(container) {
+    container.innerHTML = `<h2>Immobilienbestand</h2><div id="table-loading">Lade Daten aus Supabase...</div>`;
+    
+    const { data, error } = await supabase.from('immobilien').select('*');
+    if (error) { container.innerHTML = "Fehler: " + error.message; return; }
+
+    let html = `<div style="overflow-x:auto;"><table border="1" style="width:100%; border-collapse: collapse; background: white;">
+        <tr style="background: #eee;">
+            <th>Straße/Stadt</th><th>qm</th><th>Zimmer</th><th>Miete (Kalt)</th><th>Hausgeld (n.u.)</th><th>Rendite</th>
+        </tr>`;
+    
+    data.forEach(immo => {
+        html += `<tr>
+            <td>${immo.strasse}, ${immo.stadt}</td>
+            <td>${immo.quadratmeter}</td>
+            <td>${immo.zimmer}</td>
+            <td>${immo.kaltmiete} €</td>
+            <td>${immo.hausgeld_nicht_umlagefaehig} €</td>
+            <td>${((immo.kaltmiete * 12) / 150000 * 100).toFixed(2)}%</td> </tr>`;
+    });
+    html += `</table></div>`;
+    container.innerHTML = html;
+}
+
+// --- VERMIETER BRIEF APP ---
+function renderBriefApp(container) {
+    container.innerHTML = `
+        <h2>Brief-Generator</h2>
+        <div class="ff-section">
+            <h3>Absender (Vermieter)</h3>
+            <input type="text" id="v_name" placeholder="Dein Name" style="width:100%"><br>
+            <input type="text" id="v_anschrift" placeholder="Straße, PLZ Ort" style="width:100%"><br>
+            <h3>Empfänger (Mieter)</h3>
+            <input type="text" id="m_name" placeholder="Name Mieter" style="width:100%"><br>
+            <input type="text" id="m_anschrift" placeholder="Straße, PLZ Ort" style="width:100%"><br>
+            <h3>Inhalt</h3>
+            <input type="text" id="b_betreff" placeholder="Betreffzeile" style="width:100%; font-weight:bold;"><br>
+            <textarea id="b_text" style="width:100%; height:150px;" placeholder="Brieftext..."></textarea><br>
+            <button onclick="printBrief()" style="background:green; color:white; padding:10px;">PDF / Drucken</button>
+        </div>
+        <div id="brief-preview" style="display:none; padding: 40px; background: white; color: black; font-family: Arial;">
+            </div>
+    `;
+}
+
+function printBrief() {
+    const preview = document.getElementById('brief-preview');
+    preview.style.display = 'block';
+    preview.innerHTML = `
+        <div style="text-align:right; font-size: 12px;">${document.getElementById('v_name').value}<br>${document.getElementById('v_anschrift').value}</div>
+        <div style="margin-top: 50px;">${document.getElementById('m_name').value}<br>${document.getElementById('m_anschrift').value}</div>
+        <div style="margin-top: 50px; text-align:right;">Datum: ${new Date().toLocaleDateString()}</div>
+        <div style="margin-top: 30px; font-weight:bold;">${document.getElementById('b_betreff').value}</div>
+        <div style="margin-top: 20px; line-height: 1.5;">${document.getElementById('b_text').value.replace(/\n/g, '<br>')}</div>
+        <div style="margin-top: 80px;">Unterschrift ____________________</div>
+    `;
+    window.print();
+}
+
+// --- CHECKLISTEN ---
+function renderChecklisten(container) {
+    container.innerHTML = `
+        <h2>Vordrucke & Checklisten</h2>
+        <div class="tile" onclick="window.print()">
+            <h3>Wohnungsübergabeprotokoll</h3>
+            <p>Klicke hier um den Standard-Vordruck mit Logo zu drucken.</p>
+        </div>
+        <div class="tile">
+            <h3>Hauskauf Checkliste</h3>
+            <p>Notizen zu Substanz, Keller, Dach, Heizung...</p>
+        </div>
+    `;
+}
 function openApp(appName) {
     document.getElementById('launchpad').style.display = 'none';
     document.getElementById('app-container').style.display = 'block';
