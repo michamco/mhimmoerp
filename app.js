@@ -1,3 +1,8 @@
+// 1. Supabase Initialisierung
+const supabaseUrl = 'https://DEINE_PROJEKT_URL.supabase.co'; // BITTE DEINE URL EINTRAGEN
+const supabaseKey = 'sb_publishable_grgVSWN2j2zPAWGq_-qUug_yzc0QGV-'; // Dein öffentlicher Key
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
 function openApp(appName) {
     document.getElementById('launchpad').style.display = 'none';
     document.getElementById('app-container').style.display = 'block';
