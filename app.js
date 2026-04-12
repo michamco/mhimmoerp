@@ -1,5 +1,5 @@
 // 1. Supabase Initialisierung
-const supabaseUrl = 'https://DEINE_PROJEKT_URL.supabase.co'; // BITTE DEINE URL EINTRAGEN
+const supabaseUrl = 'https://dofofjbjgbmpxjtlolzi.supabase.co'; // BITTE DEINE URL EINTRAGEN
 const supabaseKey = 'sb_publishable_grgVSWN2j2zPAWGq_-qUug_yzc0QGV-'; // Dein öffentlicher Key
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
