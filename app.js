@@ -1,5 +1,5 @@
 // --- CONFIGURATION ---
-const supabaseUrl = 'https://DEINE_SUPABASE_URL.supabase.co'; // HIER DEINE URL EINTRAGEN
+const supabaseUrl = 'https://dofofjbjgbmpxjtlolzi.supabase.co'; // HIER DEINE URL EINTRAGEN
 const supabaseKey = 'sb_publishable_grgVSWN2j2zPAWGq_-qUug_yzc0QGV-';
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
