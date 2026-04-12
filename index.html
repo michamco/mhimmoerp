@@ -16,20 +16,15 @@
             --border-color: #d9d9d9;
         }
 
-        body { 
-            background-color: var(--sap-bg); 
-            font-family: Arial, sans-serif; 
-            margin: 0; padding: 0; color: var(--text-color);
-        }
+        body { background-color: var(--sap-bg); font-family: Arial, sans-serif; margin: 0; padding: 0; color: var(--text-color); }
 
         /* LOGIN SCREEN */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--sap-shell); }
         .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; width: 320px; transition: transform 0.2s; }
         .login-box img { width: 180px; margin-bottom: 20px; }
         .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-        .login-box button { width: 100%; padding: 12px; background: var(--sap-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .login-box button { width: 100%; padding: 12px; background: var(--sap-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
         
-        /* Shake Animation */
         .shake { animation: shakeAnim 0.4s ease-in-out; border: 2px solid #dc3545; }
         @keyframes shakeAnim { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-10px); } 50% { transform: translateX(10px); } }
 
@@ -41,7 +36,7 @@
         .tile { background: var(--card-bg); padding: 16px; height: 130px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.2s; text-decoration: none; color: inherit; }
         .tile:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-bottom: 4px solid var(--sap-blue); }
         .tile h3 { font-size: 0.95rem; margin: 0; color: var(--sap-blue); font-weight: bold; }
-        .tile-icon { font-size: 1.8rem; align-self: flex-end; opacity: 0.8; }
+        .tile-icon { font-size: 2rem; align-self: flex-end; opacity: 0.8; }
 
         /* APP CONTAINER */
         #app-container { display: none; padding: 20px; max-width: 1100px; margin: 20px auto; }
@@ -98,6 +93,8 @@
             <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Frankenthal</h3><div class="tile-icon">🏛️</div></a>
             <a href="https://versteigerungspool.de/amtsgerichte/mannheim.2739/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Mannheim</h3><div class="tile-icon">🏛️</div></a>
             <a href="https://baufinanzierung.check24.de/baufinanzierung/immobilienbewertung?deviceoutput=desktop" target="_blank" class="tile"><h3>Immo-Bewertung</h3><div class="tile-icon">📈</div></a>
+            
+            <a href="https://web.de" target="_blank" class="tile"><h3>E-Mail Postfach</h3><div class="tile-icon">📧</div></a>
 
             <div class="tile" onclick="openApp('fixflip')"><h3>Fix & Flip Rechner</h3><div class="tile-icon">🛠️</div></div>
             <div class="tile" onclick="openApp('kredit')"><h3>Kreditrechner</h3><div class="tile-icon">💶</div></div>
@@ -138,10 +135,12 @@
             }
 
             // Supabase Auth
+            if(!supabaseClient) { err.style.display = 'block'; err.innerText = "Datenbank nicht verbunden."; return; }
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email: u, password: p });
             if (error) {
                 box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake');
                 err.style.display = 'block';
+                err.innerText = "Zugang verweigert.";
             } else {
                 showMainUI(data.user.email, data.user.email.includes('admin'));
             }
@@ -153,6 +152,8 @@
             document.getElementById('displayUser').innerText = user;
             if(isAdmin) document.getElementById('admin-tile').style.display = 'flex';
         }
+
+        document.getElementById('pass').addEventListener('keypress', function(e) { if (e.key === 'Enter') checkLogin(); });
 
         // --- NAVIGATION ---
         function openApp(id) {
@@ -178,7 +179,104 @@
 
         const getV = (id) => parseFloat(document.getElementById(id).value) || 0;
 
-        // --- 1. FIX & FLIP RECHNER (4 TEILE) ---
+        // ==========================================
+        // 1. KREDITRECHNER (Baufi24 Logik)
+        // ==========================================
+        function renderKredit(container) {
+            container.innerHTML = `
+                <h2>Profi Kredit- & Baufinanzierungsrechner</h2>
+                <div class="rechner-grid">
+                    <div class="section-box">
+                        <h3>Darlehensdaten</h3>
+                        <label>Darlehensbetrag (€)</label><input type="number" id="kr_d" value="200000" oninput="calcKr()">
+                        <label>Sollzins p.a. (%)</label><input type="number" id="kr_z" value="3.5" step="0.1" oninput="calcKr()">
+                    </div>
+                    <div class="section-box">
+                        <h3>Tilgung & Laufzeit</h3>
+                        <label>Anfängliche Tilgung p.a. (%)</label><input type="number" id="kr_t" value="2.0" step="0.1" oninput="calcKr()">
+                        <label>Zinsbindung (Jahre)</label><input type="number" id="kr_j" value="10" oninput="calcKr()">
+                    </div>
+                </div>
+                <div id="kr_res" class="result-panel"></div>
+            `;
+            calcKr();
+        }
+
+        function calcKr() {
+            const K0 = getV('kr_d');
+            const zins_pa = getV('kr_z') / 100;
+            const tilg_pa = getV('kr_t') / 100;
+            const jahre = getV('kr_j');
+
+            // Monatliche Annuität (Rate) berechnen
+            const annuitaet_pa = K0 * (zins_pa + tilg_pa);
+            const rate_mtl = annuitaet_pa / 12;
+
+            // Restschuld Formel für Annuitätendarlehen
+            const i = zins_pa / 12; // Monatlicher Zins
+            const m = jahre * 12;   // Laufzeit in Monaten
+            
+            let restschuld = 0;
+            if (i > 0) {
+                // Bankübliche Restschuldformel: K_m = K_0 * (1+i)^m - R * ((1+i)^m - 1) / i
+                restschuld = K0 * Math.pow(1 + i, m) - rate_mtl * ((Math.pow(1 + i, m) - 1) / i);
+            } else {
+                restschuld = K0 - (rate_mtl * m);
+            }
+            if(restschuld < 0) restschuld = 0;
+
+            document.getElementById('kr_res').innerHTML = `
+                Monatliche Rate: <b style="font-size:1.4rem;">${rate_mtl.toFixed(2)} €</b><br><br>
+                Restschuld nach ${jahre} Jahren: <b style="color:var(--sap-blue);">${restschuld.toFixed(2)} €</b>
+            `;
+        }
+
+        // ==========================================
+        // 2. MIETRECHNER (Echter Cashflow)
+        // ==========================================
+        function renderMietrechner(container) {
+            container.innerHTML = `
+                <h2>Cashflow-Rechner für Vermieter</h2>
+                <div class="rechner-grid">
+                    <div class="section-box">
+                        <h3>Einnahmen & Finanzierung</h3>
+                        <label>Kaltmiete (€ / Monat)</label><input type="number" id="m_k" value="800" oninput="calcM()">
+                        <label>Bankrate Annuität (€ / Monat)</label><input type="number" id="m_b" value="400" oninput="calcM()">
+                    </div>
+                    <div class="section-box">
+                        <h3>Laufende Kosten (mtl.)</h3>
+                        <label>Hausgeld gesamt (€)</label><input type="number" id="m_hg" value="250" oninput="calcM()">
+                        <label>davon auf Mieter umlagefähig (€)</label><input type="number" id="m_um" value="180" oninput="calcM()">
+                        <label>Hausverwaltung (€)</label><input type="number" id="m_hv" value="25" oninput="calcM()">
+                        <label>Mietausfallversicherung (€)</label><input type="number" id="m_mv" value="15" oninput="calcM()">
+                    </div>
+                </div>
+                <div id="m_res" class="result-panel"></div>
+            `;
+            calcM();
+        }
+
+        function calcM() {
+            const miete = getV('m_k');
+            const bank = getV('m_b');
+            const nicht_umlagefaehig = getV('m_hg') - getV('m_um');
+            const hv = getV('m_hv');
+            const mv = getV('m_mv');
+            
+            const cashflow = miete - bank - nicht_umlagefaehig - hv - mv;
+            
+            document.getElementById('m_res').innerHTML = `
+                <div style="font-size:0.9rem; margin-bottom:10px;">
+                    Dein Anteil am Hausgeld (n. umlagefähig): ${nicht_umlagefaehig.toFixed(2)} €<br>
+                    Sonstige Kosten (HV + Vers.): ${(hv + mv).toFixed(2)} €
+                </div>
+                Reiner Cashflow (Vor Steuern): <b style="font-size:1.4rem; color:${cashflow >= 0 ? 'green' : 'red'};">${cashflow.toFixed(2)} €</b> pro Monat
+            `;
+        }
+
+        // ==========================================
+        // 3. FIX & FLIP RECHNER
+        // ==========================================
         function renderFixFlip(container) {
             container.innerHTML = `
                 <h2>Fix & Flip Profi-Rechner</h2>
@@ -191,9 +289,9 @@
                         <label>Notar & Grundbuch (%)</label><input type="number" id="ff_notar" value="1.5" readonly>
                         <label>Bundesland</label>
                         <select id="ff_land" onchange="calcFF()">
-                            <option value="5">Rheinland-Pfalz (5%)</option>
-                            <option value="5">Baden-Württemberg (5%)</option>
+                            <option value="5">Rheinland-Pfalz / BW (5%)</option>
                             <option value="6">Hessen (6%)</option>
+                            <option value="6.5">NRW (6.5%)</option>
                             <option value="3.5">Bayern (3,5%)</option>
                         </select>
                     </div>
@@ -212,9 +310,9 @@
                         <label>Puffer (%)</label><input type="number" id="ff_puf" value="10" oninput="calcFF()">
                     </div>
                     <div class="section-box">
-                        <h3>4. Monatliche Kosten & Verkauf</h3>
-                        <label>Hausgeld (€)</label><input type="number" id="ff_hg" value="200" oninput="calcFF()">
-                        <label>Strom/Heizung (€)</label><input type="number" id="ff_sh" value="50" oninput="calcFF()">
+                        <h3>4. Laufende Kosten & Verkauf</h3>
+                        <label>Hausgeld (€/mtl.)</label><input type="number" id="ff_hg" value="200" oninput="calcFF()">
+                        <label>Strom/Heizung (€/mtl.)</label><input type="number" id="ff_sh" value="50" oninput="calcFF()">
                         <hr>
                         <label>Ziel VK-Preis (€/qm)</label><input type="number" id="ff_vkqm" value="3800" oninput="calcFF()">
                     </div>
@@ -240,17 +338,17 @@
             
             const vk = getV('ff_vkqm') * getV('ff_qm');
             const profit = vk - totalInvest;
-            const marge = (profit / vk) * 100;
+            const marge = vk > 0 ? (profit / vk) * 100 : 0;
 
             const res = document.getElementById('ff_res');
-            res.innerHTML = `Gewinn: <b>${profit.toLocaleString()} €</b> (Marge: ${marge.toFixed(1)}%)<br><small>Invest total: ${totalInvest.toLocaleString()} €</small>`;
+            res.innerHTML = `Projektgewinn: <b>${profit.toLocaleString()} €</b> (Marge vom VK: ${marge.toFixed(1)}%)<br><small>Investition gesamt: ${totalInvest.toLocaleString()} €</small>`;
             
-            if(marge >= 25) res.style.background = "#d4edda";
-            else if(marge >= 20) res.style.background = "#fff3cd";
-            else res.style.background = "#f8d7da";
+            if(marge >= 25) { res.style.background = "#d4edda"; res.style.borderLeftColor = "green"; }
+            else if(marge >= 20) { res.style.background = "#fff3cd"; res.style.borderLeftColor = "orange"; }
+            else { res.style.background = "#f8d7da"; res.style.borderLeftColor = "red"; }
         }
 
-        // --- 2. STEUER RECHNER ---
+        // --- 4. STEUER RECHNER ---
         function renderSteuer(container) {
             container.innerHTML = `
                 <h2>Steuererstattung Immobilie</h2>
@@ -258,7 +356,7 @@
                     <label>Bruttolohn Jahr (€)</label><input type="number" id="st_brutto" value="60000" oninput="calcST()">
                     <label>Kaufpreis (€)</label><input type="number" id="st_kp" value="200000" oninput="calcST()">
                     <label>Zinsen mtl. (€)</label><input type="number" id="st_zins" value="600" oninput="calcST()">
-                    <p><small>80% Gebäudeanteil | 2% AfA</small></p>
+                    <p><small>Pauschale Annahme: 80% Gebäudeanteil | 2% AfA</small></p>
                 </div>
                 <div id="st_res" class="result-panel"></div>
             `;
@@ -274,12 +372,12 @@
             document.getElementById('st_res').innerHTML = `Geschätzte Erstattung p.a.: <b>${erstattung.toFixed(2)} €</b>`;
         }
 
-        // --- 3. BESTAND (TABELLE & INSERT) ---
+        // --- 5. BESTAND ---
         async function renderBestand(container) {
             container.innerHTML = `
-                <h2>Bestand</h2>
+                <h2>Immobilienbestand</h2>
                 <div class="section-box">
-                    <h3>Neue Immobilie</h3>
+                    <h3>Neue Immobilie erfassen</h3>
                     <div style="display:flex; gap:10px;">
                         <input type="text" id="ins_str" placeholder="Straße">
                         <input type="text" id="ins_stadt" placeholder="Stadt">
@@ -287,12 +385,13 @@
                         <button onclick="saveBestand()" style="background:green; color:white; border:none; padding:10px; cursor:pointer;">Speichern</button>
                     </div>
                 </div>
-                <div id="bestand_list">Lade...</div>
+                <div id="bestand_list">Lade Tabelle aus Datenbank...</div>
             `;
             loadBestand();
         }
 
         async function loadBestand() {
+            if(!supabaseClient) return;
             const { data } = await supabaseClient.from('immobilien').select('*');
             let h = '<table width="100%" style="border-collapse:collapse;">';
             h += '<tr style="background:#eee; text-align:left;"><th style="padding:10px;">Objekt</th><th>Stadt</th><th>Miete</th></tr>';
@@ -306,7 +405,7 @@
             loadBestand();
         }
 
-        // --- 4. BRIEF GENERATOR (DIN LAYOUT) ---
+        // --- 6. BRIEF GENERATOR ---
         function renderBrief(container) {
             container.innerHTML = `
                 <h2 class="no-print">Vermieter Brief</h2>
@@ -327,7 +426,7 @@
                     </div>
                 </div>
                 <input type="text" id="b_bet" placeholder="Betreff" class="no-print">
-                <textarea id="b_txt" placeholder="Text..." style="height:200px" class="no-print"></textarea>
+                <textarea id="b_txt" placeholder="Brieftext..." style="height:200px" class="no-print"></textarea>
                 <button class="btn-action no-print" onclick="printBrief()">Generieren & Drucken</button>
             `;
         }
@@ -350,7 +449,7 @@
             window.print();
         }
 
-        // --- 5. CHECKLISTEN / ÜBERGABE ---
+        // --- 7. CHECKLISTEN ---
         function renderChecklisten(container) {
             container.innerHTML = `
                 <h2>Übergabeprotokoll</h2>
@@ -387,13 +486,13 @@
             window.print();
         }
 
-        // --- 6. ADMIN / USER ANLEGEN ---
+        // --- 8. ADMIN USER ---
         function renderAdmin(container) {
             container.innerHTML = `
-                <h2>User-Verwaltung</h2>
-                <div class="section-box">
-                    <input type="email" id="adm_e" placeholder="E-Mail">
-                    <input type="text" id="adm_p" placeholder="Passwort">
+                <h2 style="color:red;">User-Verwaltung</h2>
+                <div class="section-box" style="border-color:red;">
+                    <input type="email" id="adm_e" placeholder="Neue E-Mail Adresse">
+                    <input type="text" id="adm_p" placeholder="Passwort (min. 6 Zeichen)">
                     <button onclick="regUser()" style="background:red; color:white; border:none; padding:10px; cursor:pointer;">Neuen User anlegen</button>
                     <p id="adm_msg"></p>
                 </div>
@@ -402,21 +501,8 @@
 
         async function regUser() {
             const { error } = await supabaseClient.auth.signUp({ email: document.getElementById('adm_e').value, password: document.getElementById('adm_p').value });
-            document.getElementById('adm_msg').innerText = error ? "Fehler: " + error.message : "Erfolg! User angelegt.";
+            document.getElementById('adm_msg').innerText = error ? "Fehler: " + error.message : "Erfolg! User wurde in Supabase angelegt.";
         }
-
-        // --- KLEINE RECHNER ---
-        function renderKredit(c) {
-            c.innerHTML = `<h2>Kredit</h2><div class="section-box"><label>Betrag</label><input type="number" id="kr_d" value="200000" oninput="calcKr()"><label>Rate (%)</label><input type="number" id="kr_z" value="5" oninput="calcKr()"></div><div id="kr_res" class="result-panel"></div>`;
-            calcKr();
-        }
-        function calcKr() { document.getElementById('kr_res').innerHTML = `Rate mtl.: <b>${((getV('kr_d') * getV('kr_z')/100)/12).toFixed(2)} €</b>`; }
-
-        function renderMietrechner(c) {
-            c.innerHTML = `<h2>Miete</h2><div class="section-box"><label>Miete Kalt</label><input type="number" id="m_k" value="800" oninput="calcM()"><label>Bankrate</label><input type="number" id="m_b" value="500" oninput="calcM()"></div><div id="m_res" class="result-panel"></div>`;
-            calcM();
-        }
-        function calcM() { document.getElementById('m_res').innerHTML = `Cashflow: <b>${(getV('m_k') - getV('m_b'))} €</b>`; }
     </script>
 </body>
 </html>
