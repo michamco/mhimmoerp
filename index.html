@@ -372,37 +372,127 @@
             document.getElementById('st_res').innerHTML = `Geschätzte Erstattung p.a.: <b>${erstattung.toFixed(2)} €</b>`;
         }
 
-        // --- 5. BESTAND ---
+        // --- 5. BESTAND (Tabelle mit Scrollen) ---
         async function renderBestand(container) {
             container.innerHTML = `
-                <h2>Immobilienbestand</h2>
-                <div class="section-box">
-                    <h3>Neue Immobilie erfassen</h3>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="ins_str" placeholder="Straße">
-                        <input type="text" id="ins_stadt" placeholder="Stadt">
-                        <input type="number" id="ins_miete" placeholder="Kaltmiete">
-                        <button onclick="saveBestand()" style="background:green; color:white; border:none; padding:10px; cursor:pointer;">Speichern</button>
+                <h2>Immobilienbestand & Verwaltung</h2>
+                <div class="section-box" style="background:#eef6ff; border-color:var(--sap-blue);">
+                    <h3 style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="toggleForm()">
+                        ➕ Neue Immobilie anlegen <span id="form-arrow">▼</span>
+                    </h3>
+                    
+                    <div id="neu-immo-form" style="display:none; margin-top:15px;">
+                        <div class="rechner-grid">
+                            <div class="section-box">
+                                <h4>📍 Basisdaten</h4>
+                                <input type="text" id="ins_str" placeholder="Straße & Hausnr.">
+                                <input type="text" id="ins_stadt" placeholder="Stadt">
+                                <input type="number" id="ins_qm" placeholder="Fläche (qm)">
+                                <input type="text" id="ins_etage" placeholder="Etage (z.B. 1. OG)">
+                                <input type="number" id="ins_zimmer" placeholder="Zimmer">
+                            </div>
+                            <div class="section-box">
+                                <h4>💶 Finanzen (mtl.)</h4>
+                                <input type="number" id="ins_kalt" placeholder="Kaltmiete (€)">
+                                <input type="number" id="ins_warm" placeholder="Warmmiete (€)">
+                                <input type="number" id="ins_bank" placeholder="Bankrate (€)">
+                                <input type="number" id="ins_hg" placeholder="Hausgeld gesamt (€)">
+                                <input type="number" id="ins_um" placeholder="davon umlagefähig (€)">
+                                <input type="number" id="ins_num" placeholder="nicht umlagefähig (€)">
+                            </div>
+                            <div class="section-box">
+                                <h4>🏢 Gebäudeinfos</h4>
+                                <input type="number" id="ins_bj" placeholder="Baujahr">
+                                <input type="text" id="ins_eek" placeholder="Energieklasse (z.B. B)">
+                                <input type="number" id="ins_reno" placeholder="Letzte Renovierung (Jahr)">
+                                <input type="text" id="ins_heiz" placeholder="Heizung (z.B. Gas, WP)">
+                                <input type="number" id="ins_parteien" placeholder="Parteien im Haus">
+                            </div>
+                            <div class="section-box">
+                                <h4>📋 Sonstiges & NK</h4>
+                                <label>Mietverhältnis seit:</label>
+                                <input type="date" id="ins_seit">
+                                <input type="number" id="ins_stell" placeholder="Stellplatz Miete (€)">
+                                <input type="number" id="ins_gs" placeholder="Grundsteuer mtl. (€)">
+                                <input type="number" id="ins_vs" placeholder="Versicherungen mtl. (€)">
+                                <textarea id="ins_sonst" placeholder="Sonstiges (z.B. Möbel)" style="height:60px;"></textarea>
+                            </div>
+                        </div>
+                        <button class="btn-action" onclick="saveBestand()" style="background:green;">Immobilie speichern</button>
+                        <p id="save-msg" style="color:green; font-weight:bold; display:none; margin-top:10px;">Erfolgreich gespeichert!</p>
                     </div>
                 </div>
-                <div id="bestand_list">Lade Tabelle aus Datenbank...</div>
+
+                <div style="overflow-x:auto; background:white; padding:15px; border-radius:6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <div id="bestand_list">Lade Tabelle aus Datenbank...</div>
+                </div>
             `;
             loadBestand();
         }
 
+        function toggleForm() {
+            const form = document.getElementById('neu-immo-form');
+            const arrow = document.getElementById('form-arrow');
+            if(form.style.display === 'none') { form.style.display = 'block'; arrow.innerText = '▲'; }
+            else { form.style.display = 'none'; arrow.innerText = '▼'; }
+        }
+
         async function loadBestand() {
             if(!supabaseClient) return;
-            const { data } = await supabaseClient.from('immobilien').select('*');
-            let h = '<table width="100%" style="border-collapse:collapse;">';
-            h += '<tr style="background:#eee; text-align:left;"><th style="padding:10px;">Objekt</th><th>Stadt</th><th>Miete</th></tr>';
-            data.forEach(i => h += `<tr style="border-bottom:1px solid #ddd;"><td style="padding:10px;">${i.strasse}</td><td>${i.stadt}</td><td>${i.kaltmiete} €</td></tr>`);
+            const { data, error } = await supabaseClient.from('immobilien').select('*');
+            if(error) { document.getElementById('bestand_list').innerHTML = 'Fehler beim Laden: ' + error.message; return; }
+            
+            let h = '<table style="width:100%; border-collapse:collapse; white-space:nowrap; font-size:0.85rem;">';
+            h += `
+                <tr style="background:var(--sap-blue); color:white; text-align:left;">
+                    <th style="padding:10px;">Straße</th><th style="padding:10px;">Stadt</th>
+                    <th style="padding:10px;">qm</th><th style="padding:10px;">Zimmer</th><th style="padding:10px;">Etage</th>
+                    <th style="padding:10px;">Kaltmiete</th><th style="padding:10px;">Warmmiete</th><th style="padding:10px;">Bankrate</th>
+                    <th style="padding:10px;">Hausgeld</th><th style="padding:10px;">Umlagef.</th><th style="padding:10px;">N. Umlagef.</th>
+                    <th style="padding:10px;">Baujahr</th><th style="padding:10px;">EEK</th><th style="padding:10px;">Heizung</th><th style="padding:10px;">Letzte Reno.</th>
+                    <th style="padding:10px;">Parteien</th><th style="padding:10px;">Mieter seit</th><th style="padding:10px;">Stellplatz</th>
+                    <th style="padding:10px;">Grundsteuer</th><th style="padding:10px;">Versicherung</th><th style="padding:10px;">Sonstiges</th>
+                </tr>
+            `;
+            
+            data.forEach(i => {
+                const val = (v) => (v === null || v === undefined || v === '') ? '-' : v;
+                h += `
+                <tr style="border-bottom:1px solid #ddd; background:white;">
+                    <td style="padding:8px;"><b>${val(i.strasse)}</b></td><td style="padding:8px;">${val(i.stadt)}</td>
+                    <td style="padding:8px;">${val(i.quadratmeter)}</td><td style="padding:8px;">${val(i.zimmer)}</td><td style="padding:8px;">${val(i.etage)}</td>
+                    <td style="padding:8px;">${val(i.kaltmiete)} €</td><td style="padding:8px;">${val(i.warmmiete)} €</td><td style="padding:8px; color:red;">${val(i.bankrate)} €</td>
+                    <td style="padding:8px;">${val(i.hausgeld)} €</td><td style="padding:8px; color:green;">${val(i.hausgeld_umlagefaehig)} €</td><td style="padding:8px; color:red;">${val(i.hausgeld_nicht_umlagefaehig)} €</td>
+                    <td style="padding:8px;">${val(i.baujahr)}</td><td style="padding:8px;">${val(i.energieeffizienzklasse)}</td><td style="padding:8px;">${val(i.heizungsart)}</td><td style="padding:8px;">${val(i.letzte_renovierung)}</td>
+                    <td style="padding:8px;">${val(i.parteien_pro_haus)}</td><td style="padding:8px;">${val(i.mietverhaeltnis_seit)}</td><td style="padding:8px;">${val(i.stellplatz)} €</td>
+                    <td style="padding:8px;">${val(i.grundsteuer)} €</td><td style="padding:8px;">${val(i.versicherungen)} €</td><td style="padding:8px;">${val(i.sonstiges)}</td>
+                </tr>`;
+            });
             document.getElementById('bestand_list').innerHTML = h + '</table>';
         }
 
         async function saveBestand() {
-            const obj = { strasse: document.getElementById('ins_str').value, stadt: document.getElementById('ins_stadt').value, kaltmiete: getV('ins_miete') };
-            await supabaseClient.from('immobilien').insert([obj]);
-            loadBestand();
+            const getNum = (id) => parseFloat(document.getElementById(id).value) || null;
+            const getStr = (id) => document.getElementById(id).value || null;
+
+            const obj = { 
+                strasse: getStr('ins_str'), stadt: getStr('ins_stadt'), quadratmeter: getNum('ins_qm'),
+                etage: getStr('ins_etage'), zimmer: getNum('ins_zimmer'), bankrate: getNum('ins_bank'),
+                kaltmiete: getNum('ins_kalt'), warmmiete: getNum('ins_warm'), mieteinnahmen: getNum('ins_kalt'),
+                hausgeld: getNum('ins_hg'), hausgeld_umlagefaehig: getNum('ins_um'), hausgeld_nicht_umlagefaehig: getNum('ins_num'),
+                baujahr: getNum('ins_bj'), energieeffizienzklasse: getStr('ins_eek'), letzte_renovierung: getNum('ins_reno'),
+                heizungsart: getStr('ins_heiz'), parteien_pro_haus: getNum('ins_parteien'), mietverhaeltnis_seit: getStr('ins_seit') ? getStr('ins_seit') : null,
+                stellplatz: getNum('ins_stell'), grundsteuer: getNum('ins_gs'), versicherungen: getNum('ins_vs'), sonstiges: getStr('ins_sonst')
+            };
+
+            const { error } = await supabaseClient.from('immobilien').insert([obj]);
+            if(error) alert("Fehler beim Speichern: " + error.message);
+            else {
+                document.getElementById('save-msg').style.display = 'block';
+                setTimeout(() => document.getElementById('save-msg').style.display = 'none', 3000);
+                document.querySelectorAll('#neu-immo-form input, #neu-immo-form textarea').forEach(el => el.value = '');
+                loadBestand();
+            }
         }
 
         // --- 6. BRIEF GENERATOR ---
