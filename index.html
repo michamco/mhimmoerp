@@ -22,18 +22,17 @@
             margin: 0; padding: 0; color: var(--text-color);
         }
 
-        /* Login */
+        /* Login Screen */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--sap-shell); }
         .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center; width: 320px; }
         .login-box img { width: 150px; margin-bottom: 20px; }
         .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; }
         .login-box button { width: 100%; padding: 12px; background: var(--sap-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
-        /* Header */
+        /* Main Shell */
         header { background: var(--sap-shell); height: 48px; display: flex; align-items: center; padding: 0 20px; color: white; justify-content: space-between; }
         .header-logo { height: 32px; filter: brightness(0) invert(1); }
 
-        /* Launchpad */
         .launchpad { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
         .tile { 
             background: var(--card-bg); padding: 16px; height: 120px; cursor: pointer; 
@@ -45,7 +44,6 @@
         .tile h3 { font-size: 0.95rem; margin: 0; color: var(--sap-blue); }
         .tile-icon { font-size: 1.8rem; align-self: flex-end; }
 
-        /* App Layout */
         #app-container { display: none; padding: 20px; max-width: 1100px; margin: 20px auto; }
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .rechner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
@@ -53,7 +51,7 @@
         .section-box h3 { margin-top: 0; font-size: 1rem; color: var(--sap-blue); border-bottom: 1px solid #eee; padding-bottom: 5px; }
         
         label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #666; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; margin-bottom: 10px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; margin-bottom: 10px; }
         
         .result-panel { background: #f0f7ff; padding: 20px; border-radius: 6px; text-align: center; border-left: 5px solid var(--sap-blue); margin-top: 15px; }
         .btn-action { background: var(--sap-blue); color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
@@ -63,8 +61,8 @@
         @media print {
             .no-print { display: none !important; }
             body { background: white; }
-            #app-container { margin: 0; max-width: 100%; }
-            .card { box-shadow: none; border: none; }
+            #app-container { margin: 0; max-width: 100%; padding: 0; }
+            .card { box-shadow: none; border: none; padding: 0; }
         }
     </style>
 </head>
@@ -93,18 +91,17 @@
         <div id="launchpad" class="launchpad">
             <a href="https://versteigerungspool.de/amtsgerichte/ludwigshafen.34341" target="_blank" class="tile"><h3>ZVG LU</h3><div class="tile-icon">🏛️</div></a>
             <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG FT</h3><div class="tile-icon">🏛️</div></a>
-            <a href="https://versteigerungspool.de/amtsgerichte/mannheim.2739/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG MA</h3><div class="tile-icon">🏛️</div></a>
             
             <div class="tile" onclick="openApp('fixflip')"><h3>Fix & Flip</h3><div class="tile-icon">🛠️</div></div>
             <div class="tile" onclick="openApp('kredit')"><h3>Kreditrechner</h3><div class="tile-icon">💶</div></div>
             <div class="tile" onclick="openApp('miete')"><h3>Mietrechner</h3><div class="tile-icon">📊</div></div>
-            <div class="tile" onclick="openApp('bestand')"><h3>Bestand</h3><div class="tile-icon)🏢</div></div>
+            <div class="tile" onclick="openApp('bestand')"><h3>Bestand</h3><div class="tile-icon">🏢</div></div>
             <div class="tile" onclick="openApp('brief')"><h3>Briefe</h3><div class="tile-icon">✉️</div></div>
             <div class="tile" onclick="openApp('checklisten')"><h3>Checklisten</h3><div class="tile-icon">📋</div></div>
         </div>
 
         <div id="app-container">
-            <button class="no-print" style="margin-bottom:15px;" onclick="closeApp()">⬅ Zurück</button>
+            <button class="no-print" style="margin-bottom:15px; padding:8px; cursor:pointer;" onclick="closeApp()">⬅ Zurück zum Launchpad</button>
             <div id="app-content" class="card"></div>
         </div>
     </div>
