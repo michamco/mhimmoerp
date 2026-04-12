@@ -1,1 +1,161 @@
 
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHIMMOBILIEN ERP</title>
+    <link rel="icon" type="image/png" href="IMG_4591.png">
+    
+    <style>
+        :root {
+            --sap-blue: #0070f2;
+            --sap-bg: #f2f2f2;
+            --tile-bg: #ffffff;
+            --text-main: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: '72', "Helvetica Neue", Helvetica, Arial, sans-serif; /* SAP Fiori Standard Font */
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--sap-bg);
+            color: var(--text-main);
+        }
+
+        /* Fiori Header */
+        header {
+            background-color: var(--sap-blue);
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo-container img {
+            height: 2.2rem;
+            margin-right: 1rem;
+        }
+
+        /* Fiori Launchpad Grid */
+        .launchpad {
+            padding: 3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Tile Design */
+        .tile {
+            background-color: var(--tile-bg);
+            border-radius: 0.25rem;
+            padding: 1.5rem;
+            height: 150px;
+            cursor: pointer;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .tile:hover {
+            box-shadow: 0 0 0 1px var(--sap-blue), 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .tile h3 {
+            font-size: 1rem;
+            font-weight: normal;
+        }
+
+        .tile .icon {
+            font-size: 2rem;
+            color: var(--sap-blue);
+            align-self: flex-end;
+        }
+
+        /* Fix&Flip App Container (Hidden by default) */
+        #app-container {
+            display: none;
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            margin-top: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <img src="IMG_4590.png" alt="MHIMMOBILIEN Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'><rect width=\'40\' height=\'40\' fill=\'white\'/></svg>'">
+        </div>
+        <h2>MHIMMOBILIEN ERP</h2>
+    </header>
+
+    <div class="launchpad" id="launchpad">
+        <a href="https://versteigerungspool.de/amtsgerichte/ludwigshafen.34341" target="_blank" class="tile">
+            <h3>ZVG LU</h3>
+            <div class="icon">🏛️</div>
+        </a>
+        <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile">
+            <h3>ZVG FT</h3>
+            <div class="icon">🏛️</div>
+        </a>
+        <a href="https://versteigerungspool.de/amtsgerichte/mannheim.2739/zwangsversteigerungen" target="_blank" class="tile">
+            <h3>ZVG MA</h3>
+            <div class="icon">🏛️</div>
+        </a>
+        <a href="https://baufinanzierung.check24.de/baufinanzierung/immobilienbewertung?deviceoutput=desktop" target="_blank" class="tile">
+            <h3>Immo-Bewertung</h3>
+            <div class="icon">📈</div>
+        </a>
+
+        <div class="tile" onclick="openApp('kredit')">
+            <h3>Kreditrechner</h3>
+            <div class="icon">💶</div>
+        </div>
+        <div class="tile" onclick="openApp('fixflip')">
+            <h3>Fix & Flip Rechner</h3>
+            <div class="icon">🔨</div>
+        </div>
+        <div class="tile" onclick="openApp('miete')">
+            <h3>Mietrechner</h3>
+            <div class="icon">📊</div>
+        </div>
+        <div class="tile" onclick="openApp('bestand')">
+            <h3>Immobilienbestand</h3>
+            <div class="icon">🏢</div>
+        </div>
+        <div class="tile" onclick="openApp('brief')">
+            <h3>Vermieter Brief</h3>
+            <div class="icon">✉️</div>
+        </div>
+        <div class="tile" onclick="openApp('checklisten')">
+            <h3>Checklisten</h3>
+            <div class="icon">📋</div>
+        </div>
+    </div>
+
+    <div id="app-container">
+        <button onclick="closeApp()" style="margin-bottom:1rem; padding: 0.5rem; background:var(--sap-blue); color:white; border:none; cursor:pointer;">Zurück zum Launchpad</button>
+        <div id="app-content"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
