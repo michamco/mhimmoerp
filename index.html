@@ -97,7 +97,6 @@
             <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG FT</h3><div class="tile-icon">🏛️</div></a>
             <a href="https://versteigerungspool.de/amtsgerichte/mannheim.2739/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG MA</h3><div class="tile-icon">🏛️</div></a>
 
-            <div class="tile" onclick="openApp('mieter')"><h3>Mieterverwaltung</h3><div class="tile-icon">👥</div></div>
             <div class="tile" onclick="openApp('projekte')"><h3>Projektplanung</h3><div class="tile-icon">🎯</div></div>
             <div class="tile" onclick="openApp('kalender')"><h3>Team Kalender</h3><div class="tile-icon">📅</div></div>
             <div class="tile" onclick="openApp('bestand')"><h3>Immobilienbestand</h3><div class="tile-icon">🏢</div></div>
@@ -128,7 +127,6 @@
         // --- LOKALER SPEICHER FÜR NEUE APPS (SIMULATION) ---
         let lokaleProjekte = [];
         let lokaleTermine = [];
-        let lokaleMieter = []; // NEU: Für Mieterverwaltung
 
         // --- INITIALISIERUNG SUPABASE ---
         let supabaseClient = null;
@@ -177,7 +175,6 @@
             const content = document.getElementById('app-content');
             content.innerHTML = '';
 
-            if(id === 'mieter') renderMieter(content);
             if(id === 'projekte') renderProjekte(content);
             if(id === 'kalender') renderKalender(content);
             if(id === 'bestand') renderBestand(content);
@@ -200,92 +197,6 @@
             const arrow = document.getElementById(arrowId);
             if(el.style.display === 'none') { el.style.display = 'block'; arrow.innerText = '▲'; }
             else { el.style.display = 'none'; arrow.innerText = '▼'; }
-        }
-
-        // ==========================================
-        // NEU: MIETERVERWALTUNG
-        // ==========================================
-        function renderMieter(container) {
-            container.innerHTML = `
-                <h2>Mieterverwaltung</h2>
-                <div class="section-box" style="background:#eef6ff; border-color:var(--sap-blue);">
-                    <h3 style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="toggleDisplay('mieter-form', 'arr-mieter')">
-                        ➕ Neuen Mieter anlegen <span id="arr-mieter">▼</span>
-                    </h3>
-                    
-                    <div id="mieter-form" style="display:none; margin-top:15px;">
-                        <div class="rechner-grid">
-                            <div class="section-box">
-                                <h4>👤 Stammdaten</h4>
-                                <input type="text" id="t_nr" placeholder="Mieternummer (z.B. M-001)">
-                                <input type="text" id="t_name" placeholder="Vorname Nachname">
-                                <input type="text" id="t_tel" placeholder="Telefonnummer">
-                                <input type="email" id="t_mail" placeholder="E-Mail Adresse">
-                            </div>
-                            
-                            <div class="section-box">
-                                <h4>🏠 Mietverhältnis</h4>
-                                <input type="text" id="t_obj" placeholder="Zugeordnete Wohnung (Adresse)">
-                                <label>Einzug / Im Objekt seit (Monat/Jahr)</label>
-                                <input type="month" id="t_seit">
-                                <label>Aktueller Status</label>
-                                <select id="t_status">
-                                    <option value="Aktiv">Aktiv</option>
-                                    <option value="Gekündigt">Gekündigt</option>
-                                    <option value="Ausgezogen">Ausgezogen</option>
-                                </select>
-                            </div>
-                            
-                            <div class="section-box">
-                                <h4>💶 Finanzen & Sonstiges</h4>
-                                <input type="number" id="t_kaution" placeholder="Kautionsbetrag (€)">
-                                <select id="t_k_status">
-                                    <option value="Bezahlt">Kaution vollständig hinterlegt</option>
-                                    <option value="Offen">Kaution noch offen</option>
-                                    <option value="Teilweise">Kaution teilweise bezahlt</option>
-                                </select>
-                                <textarea id="t_notiz" placeholder="Notizen (z.B. Haustiere, Besonderheiten, Mahnungen)" style="height:55px;"></textarea>
-                            </div>
-                        </div>
-                        <button class="btn-action" onclick="saveMieter()" style="background:green;">Mieter speichern</button>
-                    </div>
-                </div>
-
-                <div style="overflow-x:auto; margin-top:20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <table class="data-table" id="mieter-table"></table>
-                </div>
-            `;
-            updateMieterTable();
-        }
-
-        function saveMieter() {
-            lokaleMieter.push({
-                nr: getS('t_nr'), name: getS('t_name'), tel: getS('t_tel'), mail: getS('t_mail'),
-                obj: getS('t_obj'), seit: getS('t_seit'), status: getS('t_status'),
-                kaution: getV('t_kaution'), k_status: getS('t_k_status'), notiz: getS('t_notiz')
-            });
-            document.querySelectorAll('#mieter-form input, #mieter-form textarea').forEach(el => el.value = '');
-            updateMieterTable();
-        }
-
-        function updateMieterTable() {
-            let h = `<tr><th>Mieter-Nr.</th><th>Status</th><th>Name</th><th>Wohnung</th><th>Einzug seit</th><th>Kaution</th><th>Telefon</th><th>E-Mail</th><th>Notizen</th></tr>`;
-            lokaleMieter.forEach(m => {
-                let statusColor = m.status === 'Aktiv' ? '#28a745' : '#dc3545';
-                let kStatusColor = m.k_status === 'Bezahlt' ? 'green' : 'red';
-                h += `<tr>
-                    <td><b>${m.nr}</b></td>
-                    <td style="color:${statusColor}; font-weight:bold;">${m.status}</td>
-                    <td>${m.name}</td>
-                    <td>${m.obj}</td>
-                    <td>${m.seit}</td>
-                    <td>${m.kaution} € (<span style="color:${kStatusColor}">${m.k_status}</span>)</td>
-                    <td>${m.tel}</td>
-                    <td>${m.mail}</td>
-                    <td>${m.notiz}</td>
-                </tr>`;
-            });
-            document.getElementById('mieter-table').innerHTML = h;
         }
 
         // ==========================================
@@ -411,7 +322,7 @@
                 bankrate: getVNull('ins_bank'),
                 kaltmiete: getVNull('ins_kalt'),
                 warmmiete: getVNull('ins_warm'),
-                mieteinnahmen: getVNull('ins_kalt'),
+                mieteinnahmen: getVNull('ins_kalt'), // Redundant für alte Struktur
                 hausgeld: getVNull('ins_hg'),
                 hausgeld_umlagefaehig: getVNull('ins_um'),
                 hausgeld_nicht_umlagefaehig: getVNull('ins_num'),
@@ -423,7 +334,7 @@
                 letzte_renovierung: getVNull('ins_reno'),
                 heizungsart: getSNull('ins_heiz'),
                 parteien_pro_haus: getVNull('ins_parteien'),
-                mietverhaeltnis_seit: getSNull('ins_seit'),
+                mietverhaeltnis_seit: getSNull('ins_seit'), // Date
                 stellplatz: getVNull('ins_stell'),
                 grundsteuer: getVNull('ins_gs'),
                 versicherungen: getVNull('ins_vs'),
@@ -694,4 +605,135 @@
                                 <label>Ziel Termin</label><input type="date" id="p_termin">
                             </div>
                             <div class="section-box">
-                                <h4>Exit Strategie (Verkauf)
+                                <h4>Exit Strategie (Verkauf)</h4>
+                                <input type="number" id="p_vmin" placeholder="Verkaufspreis Min. (€)">
+                                <input type="number" id="p_vmit" placeholder="Verkaufspreis Mittel (€)">
+                                <input type="number" id="p_vmax" placeholder="Verkaufspreis Max. (€)">
+                            </div>
+                        </div>
+                        <button class="btn-action" onclick="saveProjekt()" style="background:green;">Projekt speichern</button>
+                    </div>
+                </div>
+                <div style="overflow-x:auto; margin-top:20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <table class="data-table" id="proj-table"></table>
+                </div>
+            `;
+            updateProjektTable();
+        }
+
+        function saveProjekt() {
+            const zkp = getV('p_zkp'); const aufwand = getV('p_auf'); const invest = zkp + aufwand;
+            const calcMarge = (vk) => vk > 0 ? ((vk - invest) / vk * 100).toFixed(1) : 0;
+
+            lokaleProjekte.push({
+                adr: getS('p_adr'), stadt: getS('p_stadt'), vw: getV('p_vw'), zkp: zkp, wg: getV('p_wg'),
+                termin: getS('p_termin'), qm: getV('p_qm'), bj: getV('p_bj'), verm: getS('p_verm'), auf: aufwand,
+                vmin: getV('p_vmin'), vmit: getV('p_vmit'), vmax: getV('p_vmax'),
+                mmin: calcMarge(getV('p_vmin')), mmit: calcMarge(getV('p_vmit')), mmax: calcMarge(getV('p_vmax'))
+            });
+            document.querySelectorAll('#proj-form input').forEach(el => el.value = '');
+            updateProjektTable();
+        }
+
+        function updateProjektTable() {
+            let h = `<tr><th>Adresse</th><th>Stadt</th><th>Verkehrswert</th><th>Ziel-KP</th><th>Limit</th><th>Termin</th><th>QM</th><th>BJ</th><th>Vermietet</th><th>Aufwand</th><th>VK (Min)</th><th>VK (Mittel)</th><th>VK (Max)</th><th>Marge Min</th><th>Marge Mittel</th><th>Marge Max</th></tr>`;
+            lokaleProjekte.forEach(p => {
+                h += `<tr><td><b>${p.adr}</b></td><td>${p.stadt}</td><td>${p.vw} €</td><td>${p.zkp} €</td><td>${p.wg} €</td><td>${p.termin}</td><td>${p.qm}</td><td>${p.bj}</td><td>${p.verm}</td><td>${p.auf} €</td><td>${p.vmin} €</td><td>${p.vmit} €</td><td>${p.vmax} €</td><td style="color:${p.mmin >= 20 ? 'green' : 'red'}; font-weight:bold;">${p.mmin} %</td><td style="color:${p.mmit >= 20 ? 'green' : 'red'}; font-weight:bold;">${p.mmit} %</td><td style="color:${p.mmax >= 20 ? 'green' : 'red'}; font-weight:bold;">${p.mmax} %</td></tr>`;
+            });
+            document.getElementById('proj-table').innerHTML = h;
+        }
+
+        // ==========================================
+        // TEAM KALENDER
+        // ==========================================
+        function renderKalender(container) {
+            container.innerHTML = `
+                <h2>Team Kalender & Termine</h2>
+                <div class="rechner-grid">
+                    <div class="section-box" style="background:#eef6ff;">
+                        <h3>Neuen Termin eintragen</h3>
+                        <input type="date" id="k_datum">
+                        <input type="time" id="k_zeit">
+                        <input type="text" id="k_mitarbeiter" placeholder="Mitarbeiter / Zuständiger">
+                        <input type="text" id="k_titel" placeholder="Thema / Ort">
+                        <button class="btn-action" onclick="saveTermin()">Termin hinzufügen</button>
+                    </div>
+                    <div class="section-box" style="overflow-y:auto; max-height:400px;">
+                        <h3>Anstehende Termine</h3>
+                        <div id="kalender-liste"></div>
+                    </div>
+                </div>
+            `;
+            updateKalender();
+        }
+
+        function saveTermin() {
+            const t = { date: getS('k_datum'), time: getS('k_zeit'), person: getS('k_mitarbeiter'), title: getS('k_titel') };
+            if(t.date && t.title) { lokaleTermine.push(t); updateKalender(); }
+        }
+
+        function updateKalender() {
+            lokaleTermine.sort((a, b) => new Date(a.date) - new Date(b.date));
+            let h = '';
+            lokaleTermine.forEach(t => { h += `<div style="padding:10px; border-bottom:1px solid #ccc; background:white; margin-bottom:5px; border-left:4px solid var(--sap-blue);"><b style="color:var(--sap-blue);">${new Date(t.date).toLocaleDateString('de-DE')} - ${t.time} Uhr</b><br>${t.title} <br><small style="color:#666;">Zuständig: ${t.person}</small></div>`; });
+            document.getElementById('kalender-liste').innerHTML = h || '<p>Keine Termine vorhanden.</p>';
+        }
+
+        // ==========================================
+        // BRIEF GENERATOR
+        // ==========================================
+        function renderBrief(container) {
+            container.innerHTML = `
+                <h2 class="no-print">Vermieter Brief</h2>
+                <div class="rechner-grid no-print">
+                    <div class="section-box">
+                        <h3>Absender</h3>
+                        <input type="text" id="b_v_n" placeholder="Dein Name">
+                        <input type="text" id="b_v_a" placeholder="Straße">
+                        <input type="text" id="b_v_o" placeholder="PLZ Stadt">
+                    </div>
+                    <div class="section-box">
+                        <h3>Empfänger</h3>
+                        <input type="text" id="b_m_n" placeholder="Mieter Name">
+                        <input type="text" id="b_m_a" placeholder="Straße Nr.">
+                        <input type="text" id="b_m_o" placeholder="PLZ Stadt">
+                    </div>
+                </div>
+                <input type="text" id="b_bet" placeholder="Betreff" class="no-print">
+                <textarea id="b_txt" placeholder="Text..." style="height:200px" class="no-print"></textarea>
+                <button class="btn-action no-print" onclick="printBrief()">Generieren & Drucken</button>
+            `;
+        }
+
+        function printBrief() {
+            document.getElementById('print-area').innerHTML = `<div style="font-family:Arial; padding:40px;"><img src="IMG_4590.png" style="width:200px; margin-bottom:20px;"><div style="font-size:8pt; text-decoration:underline; margin-bottom:20px;">${getS('b_v_n')}, ${getS('b_v_a')}, ${getS('b_v_o')}</div><div>${getS('b_m_n')}<br>${getS('b_m_a')}<br>${getS('b_m_o')}</div><div style="text-align:right; margin-top:40px;">Datum: ${new Date().toLocaleDateString()}</div><div style="margin-top:40px; font-weight:bold; font-size:12pt;">${getS('b_bet')}</div><div style="margin-top:30px; white-space:pre-wrap;">${getS('b_txt')}</div><div style="margin-top:60px;">Mit freundlichen Grüßen,<br><br><br>____________________<br>${getS('b_v_n')}</div></div>`;
+            window.print();
+        }
+
+        // ==========================================
+        // ÜBERGABEPROTOKOLL
+        // ==========================================
+        function renderChecklisten(container) {
+            container.innerHTML = `<h2>Übergabeprotokoll</h2><div class="section-box"><label>Vermieter Name</label><input type="text" id="cp_v" placeholder="Name"><label>Mieter Name</label><input type="text" id="cp_m" placeholder="Name"><label>Objekt Adresse</label><input type="text" id="cp_o" placeholder="Straße, Stadt"></div><button class="btn-action" onclick="printProt()">Protokoll (2-fach) drucken</button>`;
+        }
+
+        function printProt() {
+            const v = getS('cp_v') || '_____________________'; const m = getS('cp_m') || '_____________________'; const o = getS('cp_o') || '_____________________';
+            const getTemplate = (kopieText) => `<div style="font-family:Arial; font-size:10pt; padding:20px;"><img src="IMG_4590.png" style="width:150px; margin-bottom:10px;"><h2 style="margin-bottom:0;">Wohnungsübergabeprotokoll</h2><p style="font-weight:bold; color:#555;">(${kopieText})</p><table style="width:100%; margin-top:20px;"><tr><td><b>Vermieter:</b></td><td>${v}</td><td><b>Datum:</b></td><td>${new Date().toLocaleDateString()}</td></tr><tr><td><b>Mieter:</b></td><td colspan="3">${m}</td></tr><tr><td><b>Objekt:</b></td><td colspan="3">${o}</td></tr></table><h3 style="border-bottom:1px solid #000; margin-top:20px;">1. Zählerstände</h3><table style="width:100%; border-collapse: collapse;" border="1"><tr style="background:#f2f2f2;"><th style="padding:5px;">Art</th><th>Zählernummer</th><th>Zählerstand</th></tr><tr><td style="padding:8px;">Strom</td><td></td><td></td></tr><tr><td style="padding:8px;">Gas</td><td></td><td></td></tr><tr><td style="padding:8px;">Heizung</td><td></td><td></td></tr><tr><td style="padding:8px;">Wasser (Warm)</td><td></td><td></td></tr><tr><td style="padding:8px;">Wasser (Kalt)</td><td></td><td></td></tr></table><h3 style="border-bottom:1px solid #000; margin-top:20px;">2. Schlüsselübergabe</h3><table style="width:80%;"><tr><td>Haustür:</td><td>______ Stk.</td><td>Briefkasten:</td><td>______ Stk.</td></tr><tr><td>Wohnung:</td><td>______ Stk.</td><td>Keller:</td><td>______ Stk.</td></tr><tr><td>Sonstige:</td><td colspan="3">_________________________________________</td></tr></table><h3 style="border-bottom:1px solid #000; margin-top:20px;">3. Mängel / Notizen</h3><div style="min-height:150px; border:1px solid #eee;"></div><div style="margin-top:50px; display:flex; justify-content:space-between;"><div>______________________________<br>Unterschrift Vermieter</div><div>______________________________<br>Unterschrift Mieter</div></div></div>`;
+            document.getElementById('print-area').innerHTML = getTemplate("Ausfertigung Vermieter") + '<div class="page-break"></div>' + getTemplate("Ausfertigung Mieter");
+            window.print();
+        }
+
+        // ==========================================
+        // ADMIN USER
+        // ==========================================
+        function renderAdmin(container) {
+            container.innerHTML = `<h2 style="color:red;">User-Verwaltung</h2><div class="section-box" style="border-color:red;"><input type="email" id="ad_e" placeholder="Neue E-Mail"><input type="text" id="ad_p" placeholder="Passwort (min. 6 Zeichen)"><button onclick="regU()" style="background:red; color:white; padding:10px;">User anlegen</button><p id="ad_m"></p></div>`;
+        }
+        async function regU() {
+            const { error } = await supabaseClient.auth.signUp({ email: getS('ad_e'), password: getS('ad_p') });
+            document.getElementById('ad_m').innerText = error ? "Fehler: " + error.message : "Erfolg! User wurde angelegt.";
+        }
+    </script>
+</body>
+</html>
