@@ -125,10 +125,9 @@
         const getSNull = (id) => { const el = document.getElementById(id); return (el && el.value.trim() !== '') ? el.value.trim() : null; };
         const getVNull = (id) => { const el = document.getElementById(id); return (el && el.value.trim() !== '' && !isNaN(parseFloat(el.value))) ? parseFloat(el.value) : null; };
 
-        // --- LOKALER SPEICHER FÜR NEUE APPS ---
+        // --- LOKALER SPEICHER FÜR APPS OHNE DB ---
         let lokaleProjekte = [];
         let lokaleTermine = [];
-        let lokaleMieter = []; // Neu für die Mieterverwaltung
 
         // --- INITIALISIERUNG SUPABASE ---
         let supabaseClient = null;
@@ -143,13 +142,11 @@
             const box = document.getElementById('loginBox');
             const err = document.getElementById('login-err');
 
-            // Admin Login
             if (u === 'admin44321' && p === 'hzre-lkurt-321a') {
                 showMainUI('System Admin', true);
                 return;
             }
 
-            // Supabase Auth
             if(!supabaseClient) { err.style.display = 'block'; err.innerText = "Datenbank nicht verbunden."; return; }
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email: u, password: p });
             if (error) {
@@ -203,7 +200,7 @@
         }
 
         // ==========================================
-        // NEU: MIETERVERWALTUNG
+        // MIETERVERWALTUNG (JETZT MIT SUPABASE)
         // ==========================================
         function renderMieterverwaltung(container) {
             container.innerHTML = `
@@ -242,53 +239,63 @@
                                 <textarea id="mt_notiz" placeholder="Wichtige Anmerkungen, Beschwerden, Absprachen..." style="height:120px;"></textarea>
                             </div>
                         </div>
-                        <button class="btn-action" onclick="saveMieter()" style="background:green;">Mieter speichern</button>
+                        <button class="btn-action" onclick="saveMieter()" style="background:green;">Mieter in Datenbank speichern</button>
                     </div>
                 </div>
 
                 <div style="overflow-x:auto; margin-top:20px; background:white; padding:15px; border-radius:6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                    <table class="data-table" id="mieter-table"></table>
+                    <table class="data-table" id="mieter-table">Lade Daten aus Supabase...</table>
                 </div>
             `;
-            updateMieterTable();
+            loadMieter();
         }
 
-        function saveMieter() {
+        async function saveMieter() {
             const mieter = {
-                name: getS('mt_name'),
-                tel: getS('mt_tel'),
-                email: getS('mt_email'),
-                immo: getS('mt_immo'),
+                name: getSNull('mt_name'),
+                tel: getSNull('mt_tel'),
+                email: getSNull('mt_email'),
+                immo: getSNull('mt_immo'),
                 kaution: getS('mt_kaution'),
                 status: getS('mt_status'),
-                notiz: getS('mt_notiz')
+                notiz: getSNull('mt_notiz')
             };
             
-            if(mieter.name !== "") {
-                lokaleMieter.push(mieter);
-                document.querySelectorAll('#neu-mieter-form input, #neu-mieter-form textarea').forEach(el => el.value = '');
-                updateMieterTable();
+            if(mieter.name) {
+                const { error } = await supabaseClient.from('mieter').insert([mieter]);
+                if (error) {
+                    alert("Fehler beim Speichern: " + error.message);
+                } else {
+                    document.querySelectorAll('#neu-mieter-form input, #neu-mieter-form textarea').forEach(el => el.value = '');
+                    loadMieter();
+                }
             } else {
                 alert("Bitte mindestens den Namen des Mieters eingeben.");
             }
         }
 
-        function updateMieterTable() {
+        async function loadMieter() {
+            if(!supabaseClient) return;
+            const { data, error } = await supabaseClient.from('mieter').select('*').order('created_at', { ascending: false });
+            if(error) { document.getElementById('mieter-table').innerHTML = 'Fehler beim Laden: ' + error.message; return; }
+            
             let h = `<tr><th>Name</th><th>Immobilie</th><th>Telefon</th><th>E-Mail</th><th>Kaution</th><th>Status</th><th>Notizen</th></tr>`;
-            lokaleMieter.forEach(m => {
+            data.forEach(m => {
                 let statusColor = "black";
-                if(m.status.includes('Pünktlich')) statusColor = "green";
-                if(m.status.includes('rückstand')) statusColor = "red";
-                if(m.status.includes('Gekündigt')) statusColor = "gray";
+                if(m.status && m.status.includes('Pünktlich')) statusColor = "green";
+                if(m.status && m.status.includes('rückstand')) statusColor = "red";
+                if(m.status && m.status.includes('Gekündigt')) statusColor = "gray";
+
+                const val = (v) => v || '-';
 
                 h += `<tr>
-                    <td><b>${m.name}</b></td>
-                    <td>${m.immo}</td>
-                    <td>${m.tel}</td>
-                    <td>${m.email}</td>
-                    <td>${m.kaution}</td>
-                    <td style="color:${statusColor}; font-weight:bold;">${m.status}</td>
-                    <td>${m.notiz}</td>
+                    <td><b>${val(m.name)}</b></td>
+                    <td>${val(m.immo)}</td>
+                    <td>${val(m.tel)}</td>
+                    <td>${val(m.email)}</td>
+                    <td>${val(m.kaution)}</td>
+                    <td style="color:${statusColor}; font-weight:bold;">${val(m.status)}</td>
+                    <td>${val(m.notiz)}</td>
                 </tr>`;
             });
             document.getElementById('mieter-table').innerHTML = h;
@@ -388,7 +395,7 @@
         }
 
         // ==========================================
-        // 1. FIX & FLIP RECHNER
+        // FIX & FLIP RECHNER
         // ==========================================
         function renderFixFlip(container) {
             container.innerHTML = `
@@ -426,7 +433,7 @@
         }
 
         // ==========================================
-        // 2. KREDITRECHNER
+        // KREDITRECHNER
         // ==========================================
         function renderKredit(container) {
             container.innerHTML = `<h2>Kredit- & Baufinanzierungsrechner</h2><div class="rechner-grid"><div class="section-box"><h3>Darlehensdaten</h3><label>Darlehensbetrag (€)</label><input type="number" id="kr_d" value="200000" oninput="calcKr()"><label>Sollzins p.a. (%)</label><input type="number" id="kr_z" value="3.5" step="0.1" oninput="calcKr()"></div><div class="section-box"><h3>Tilgung & Laufzeit</h3><label>Anfängliche Tilgung p.a. (%)</label><input type="number" id="kr_t" value="2.0" step="0.1" oninput="calcKr()"><label>Zinsbindung / Laufzeit (Jahre)</label><input type="number" id="kr_j" value="10" oninput="calcKr()"></div></div><div id="kr_res" class="result-panel"></div>`;
@@ -445,7 +452,7 @@
         }
 
         // ==========================================
-        // 3. MIETRECHNER
+        // MIETRECHNER
         // ==========================================
         function renderMietrechner(container) {
             container.innerHTML = `<h2>Cashflow & Rendite Rechner</h2><div class="rechner-grid"><div class="section-box"><h3>Einnahmen & Basis</h3><label>Kaufpreis (für Rendite) €</label><input type="number" id="m_kp" value="200000" oninput="calcM()"><label>Kaltmiete (€ / Monat)</label><input type="number" id="m_k" value="800" oninput="calcM()"><label>Bankrate Annuität (€ / Monat)</label><input type="number" id="m_b" value="400" oninput="calcM()"></div><div class="section-box"><h3>Laufende Kosten (mtl.)</h3><label>Hausgeld gesamt (€)</label><input type="number" id="m_hg" value="250" oninput="calcM()"><label>Davon umlagefähig (€)</label><input type="number" id="m_um" value="180" oninput="calcM()"><label>Hausverwaltung (€)</label><input type="number" id="m_hv" value="25" oninput="calcM()"><label>Mietausfall / Instandhaltung (€)</label><input type="number" id="m_mv" value="20" oninput="calcM()"></div></div><div id="m_res" class="result-panel"></div>`;
@@ -461,7 +468,7 @@
         }
 
         // ==========================================
-        // 4. STEUER RECHNER
+        // STEUER RECHNER
         // ==========================================
         function renderSteuer(container) {
             container.innerHTML = `<h2>Steuererstattung Immobilie (Schätzung)</h2><div class="rechner-grid"><div class="section-box"><h3>Basisdaten</h3><label>Bruttolohn Jahr (€)</label><input type="number" id="st_brutto" value="60000" oninput="calcST()"><label>Kaufpreis Immobilie (€)</label><input type="number" id="st_kp" value="200000" oninput="calcST()"><label>Zinskosten p.a. (€)</label><input type="number" id="st_zins" value="6000" oninput="calcST()"></div><div class="section-box"><h3>Abschreibung (AfA) Parameter</h3><label>Gebäudeanteil (%)</label><input type="number" id="st_geb" value="80" oninput="calcST()"><label>AfA Satz (%)</label><input type="number" id="st_afa" value="2.0" step="0.5" oninput="calcST()"><label>Sonstige absetzbare Kosten p.a. (€)</label><input type="number" id="st_sonst" value="0" oninput="calcST()"></div></div><div id="st_res" class="result-panel"></div>`;
