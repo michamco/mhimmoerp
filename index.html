@@ -329,7 +329,6 @@
             const boden = document.getElementById('ff_boden');
             const wand = document.getElementById('ff_wand');
             
-            // Wände & Decken Formel: 32 Euro * 3,6 * qm
             if(elek && boden && wand) {
                 elek.value = qm * 110;
                 boden.value = qm * 70;
@@ -364,18 +363,12 @@
                     </div>
                     <div class="section-box">
                         <h3>3. Sanierung (Gewerke)</h3>
-                        <label>Badausstattung</label>
-                        <select id="ff_bad" onchange="calcFF()">
-                            <option value="0">Kein neues Bad (0 €)</option>
-                            <option value="6000">Einfach (6.000 €)</option>
-                            <option value="8000" selected>Mittel (8.000 €)</option>
-                            <option value="12000">Gehoben (12.000 €)</option>
-                        </select>
+                        <label>Bad (Pauschal mittlerer Standard) - €</label><input type="number" id="ff_bad" value="8000" oninput="calcFF()">
+                        <label>Heizung (€)</label><input type="number" id="ff_heiz" value="0" oninput="calcFF()">
                         <label>Elektrik (110 €/qm) - €</label><input type="number" id="ff_elek" oninput="calcFF()">
                         <label>Boden (70 €/qm) - €</label><input type="number" id="ff_boden" oninput="calcFF()">
                         <label>Wände/Decken (32€ * 3,6 * qm) - €</label><input type="number" id="ff_wand" oninput="calcFF()">
-                        <label>Küche (€)</label><input type="number" id="ff_kue" value="0" oninput="calcFF()">
-                        <label>Sonstiges / Entrümpelung (€)</label><input type="number" id="ff_sonst" value="3000" oninput="calcFF()">
+                        <label>Sonstiges (€)</label><input type="number" id="ff_sonst" value="3000" oninput="calcFF()">
                         <label>Sicherheitspuffer (%)</label><input type="number" id="ff_puf" value="10" oninput="calcFF()">
                     </div>
                     <div class="section-box">
@@ -389,7 +382,6 @@
                 </div>
                 <div id="ff_res" class="result-panel"></div>
             `;
-            // Initiale Berechnung der Gewerke auf Basis der 70qm Standardwert aufrufen
             updateRenoSpecs();
             calcFF();
         }
@@ -397,8 +389,7 @@
         function calcFF() {
             const kp = getV('ff_kp'); const nk_p = (getV('ff_land') + getV('ff_notar') + getV('ff_makler')) / 100; const ankaufGesamt = kp + (kp * nk_p);
             
-            // Neue Berechnung: Bad + Elektrik + Boden + Wand + Küche + Sonstiges
-            const renoBase = getV('ff_bad') + getV('ff_elek') + getV('ff_boden') + getV('ff_wand') + getV('ff_kue') + getV('ff_sonst'); 
+            const renoBase = getV('ff_bad') + getV('ff_heiz') + getV('ff_elek') + getV('ff_boden') + getV('ff_wand') + getV('ff_sonst'); 
             const renoGesamt = renoBase * (1 + (getV('ff_puf')/100));
             
             const kredit = (ankaufGesamt + renoGesamt) * (getV('ff_fin_p')/100); const zinsKosten = kredit * (getV('ff_zins')/100) * (getV('ff_mon')/12);
