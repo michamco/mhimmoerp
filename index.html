@@ -200,7 +200,7 @@
         }
 
         // ==========================================
-        // MIETERVERWALTUNG (JETZT MIT SUPABASE)
+        // MIETERVERWALTUNG (SUPABASE)
         // ==========================================
         function renderMieterverwaltung(container) {
             container.innerHTML = `
@@ -251,52 +251,26 @@
         }
 
         async function saveMieter() {
-            const mieter = {
-                name: getSNull('mt_name'),
-                tel: getSNull('mt_tel'),
-                email: getSNull('mt_email'),
-                immo: getSNull('mt_immo'),
-                kaution: getS('mt_kaution'),
-                status: getS('mt_status'),
-                notiz: getSNull('mt_notiz')
-            };
-            
+            const mieter = { name: getSNull('mt_name'), tel: getSNull('mt_tel'), email: getSNull('mt_email'), immo: getSNull('mt_immo'), kaution: getS('mt_kaution'), status: getS('mt_status'), notiz: getSNull('mt_notiz') };
             if(mieter.name) {
                 const { error } = await supabaseClient.from('mieter').insert([mieter]);
-                if (error) {
-                    alert("Fehler beim Speichern: " + error.message);
-                } else {
-                    document.querySelectorAll('#neu-mieter-form input, #neu-mieter-form textarea').forEach(el => el.value = '');
-                    loadMieter();
-                }
-            } else {
-                alert("Bitte mindestens den Namen des Mieters eingeben.");
-            }
+                if (error) { alert("Fehler beim Speichern: " + error.message); } 
+                else { document.querySelectorAll('#neu-mieter-form input, #neu-mieter-form textarea').forEach(el => el.value = ''); loadMieter(); }
+            } else { alert("Bitte mindestens den Namen des Mieters eingeben."); }
         }
 
         async function loadMieter() {
             if(!supabaseClient) return;
             const { data, error } = await supabaseClient.from('mieter').select('*').order('created_at', { ascending: false });
             if(error) { document.getElementById('mieter-table').innerHTML = 'Fehler beim Laden: ' + error.message; return; }
-            
             let h = `<tr><th>Name</th><th>Immobilie</th><th>Telefon</th><th>E-Mail</th><th>Kaution</th><th>Status</th><th>Notizen</th></tr>`;
             data.forEach(m => {
                 let statusColor = "black";
                 if(m.status && m.status.includes('Pünktlich')) statusColor = "green";
                 if(m.status && m.status.includes('rückstand')) statusColor = "red";
                 if(m.status && m.status.includes('Gekündigt')) statusColor = "gray";
-
                 const val = (v) => v || '-';
-
-                h += `<tr>
-                    <td><b>${val(m.name)}</b></td>
-                    <td>${val(m.immo)}</td>
-                    <td>${val(m.tel)}</td>
-                    <td>${val(m.email)}</td>
-                    <td>${val(m.kaution)}</td>
-                    <td style="color:${statusColor}; font-weight:bold;">${val(m.status)}</td>
-                    <td>${val(m.notiz)}</td>
-                </tr>`;
+                h += `<tr><td><b>${val(m.name)}</b></td><td>${val(m.immo)}</td><td>${val(m.tel)}</td><td>${val(m.email)}</td><td>${val(m.kaution)}</td><td style="color:${statusColor}; font-weight:bold;">${val(m.status)}</td><td>${val(m.notiz)}</td></tr>`;
             });
             document.getElementById('mieter-table').innerHTML = h;
         }
@@ -311,58 +285,18 @@
                     <h3 style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="toggleDisplay('neu-immo-form', 'form-arrow')">
                         ➕ Neue Immobilie anlegen <span id="form-arrow">▼</span>
                     </h3>
-                    
                     <div id="neu-immo-form" style="display:none; margin-top:15px;">
                         <div class="rechner-grid">
-                            <div class="section-box">
-                                <h4>📍 Identifikation & Basis</h4>
-                                <input type="text" id="ins_lfd" placeholder="Lfd. Nr. (z.B. 01)">
-                                <select id="ins_typ"><option value="M">M - Vermietet</option><option value="F">F - Fix & Flip</option><option value="E">E - Eigennutzung</option></select>
-                                <input type="text" id="ins_str" placeholder="Straße & Hausnr.">
-                                <input type="text" id="ins_stadt" placeholder="Stadt">
-                                <input type="number" id="ins_qm" placeholder="Fläche (qm)">
-                                <input type="text" id="ins_etage" placeholder="Etage (z.B. 1. OG)">
-                                <input type="number" id="ins_zimmer" placeholder="Anzahl Zimmer">
-                            </div>
-                            <div class="section-box">
-                                <h4>💶 Kauf & Finanzen (mtl.)</h4>
-                                <input type="number" id="ins_kp" placeholder="Kaufpreis (€)">
-                                <input type="number" id="ins_kalt" placeholder="Kaltmiete (€)">
-                                <input type="number" id="ins_warm" placeholder="Warmmiete (€)">
-                                <input type="number" id="ins_bank" placeholder="Bankrate (€)">
-                                <input type="number" id="ins_hg" placeholder="Hausgeld gesamt (€)">
-                                <input type="number" id="ins_um" placeholder="davon umlagefähig (€)">
-                                <input type="number" id="ins_num" placeholder="nicht umlagefähig (€)">
-                            </div>
-                            <div class="section-box">
-                                <h4>🏢 Gebäudeinfos & Zähler</h4>
-                                <input type="text" id="ins_z_strom" placeholder="Zählernummer Strom">
-                                <input type="text" id="ins_z_wasser" placeholder="Zählernummer Wasser">
-                                <input type="text" id="ins_z_gas" placeholder="Zählernummer Gas">
-                                <input type="number" id="ins_bj" placeholder="Baujahr">
-                                <input type="text" id="ins_eek" placeholder="Energieeffizienz (z.B. B)">
-                                <input type="text" id="ins_heiz" placeholder="Heizungsart (z.B. Gas)">
-                                <input type="number" id="ins_reno" placeholder="Letzte Renovierung (Jahr)">
-                                <input type="number" id="ins_parteien" placeholder="Parteien im Haus">
-                            </div>
-                            <div class="section-box">
-                                <h4>📋 Sonstiges & NK</h4>
-                                <label>Mietverhältnis seit:</label>
-                                <input type="date" id="ins_seit">
-                                <input type="number" id="ins_stell" placeholder="Stellplatz Miete (€)">
-                                <input type="number" id="ins_gs" placeholder="Grundsteuer mtl. (€)">
-                                <input type="number" id="ins_vs" placeholder="Versicherungen mtl. (€)">
-                                <textarea id="ins_sonst" placeholder="Sonstiges (z.B. Möbel, Info)" style="height:60px;"></textarea>
-                            </div>
+                            <div class="section-box"><h4>📍 Identifikation & Basis</h4><input type="text" id="ins_lfd" placeholder="Lfd. Nr. (z.B. 01)"><select id="ins_typ"><option value="M">M - Vermietet</option><option value="F">F - Fix & Flip</option><option value="E">E - Eigennutzung</option></select><input type="text" id="ins_str" placeholder="Straße & Hausnr."><input type="text" id="ins_stadt" placeholder="Stadt"><input type="number" id="ins_qm" placeholder="Fläche (qm)"><input type="text" id="ins_etage" placeholder="Etage (z.B. 1. OG)"><input type="number" id="ins_zimmer" placeholder="Anzahl Zimmer"></div>
+                            <div class="section-box"><h4>💶 Kauf & Finanzen (mtl.)</h4><input type="number" id="ins_kp" placeholder="Kaufpreis (€)"><input type="number" id="ins_kalt" placeholder="Kaltmiete (€)"><input type="number" id="ins_warm" placeholder="Warmmiete (€)"><input type="number" id="ins_bank" placeholder="Bankrate (€)"><input type="number" id="ins_hg" placeholder="Hausgeld gesamt (€)"><input type="number" id="ins_um" placeholder="davon umlagefähig (€)"><input type="number" id="ins_num" placeholder="nicht umlagefähig (€)"></div>
+                            <div class="section-box"><h4>🏢 Gebäudeinfos & Zähler</h4><input type="text" id="ins_z_strom" placeholder="Zählernummer Strom"><input type="text" id="ins_z_wasser" placeholder="Zählernummer Wasser"><input type="text" id="ins_z_gas" placeholder="Zählernummer Gas"><input type="number" id="ins_bj" placeholder="Baujahr"><input type="text" id="ins_eek" placeholder="Energieeffizienz (z.B. B)"><input type="text" id="ins_heiz" placeholder="Heizungsart (z.B. Gas)"><input type="number" id="ins_reno" placeholder="Letzte Renovierung (Jahr)"><input type="number" id="ins_parteien" placeholder="Parteien im Haus"></div>
+                            <div class="section-box"><h4>📋 Sonstiges & NK</h4><label>Mietverhältnis seit:</label><input type="date" id="ins_seit"><input type="number" id="ins_stell" placeholder="Stellplatz Miete (€)"><input type="number" id="ins_gs" placeholder="Grundsteuer mtl. (€)"><input type="number" id="ins_vs" placeholder="Versicherungen mtl. (€)"><textarea id="ins_sonst" placeholder="Sonstiges (z.B. Möbel, Info)" style="height:60px;"></textarea></div>
                         </div>
                         <button class="btn-action" onclick="saveBestand()" style="background:green;">Immobilie in Datenbank speichern</button>
                         <p id="save-msg" style="color:green; font-weight:bold; display:none; margin-top:10px;">Erfolgreich gespeichert!</p>
                     </div>
                 </div>
-
-                <div style="overflow-x:auto; background:white; padding:15px; border-radius:6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                    <div id="bestand_list">Lade Tabelle aus Datenbank...</div>
-                </div>
+                <div style="overflow-x:auto; background:white; padding:15px; border-radius:6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);"><div id="bestand_list">Lade Tabelle aus Datenbank...</div></div>
             `;
             loadBestand();
         }
@@ -371,9 +305,7 @@
             if(!supabaseClient) return;
             const { data, error } = await supabaseClient.from('immobilien').select('*').order('created_at', { ascending: false });
             if(error) { document.getElementById('bestand_list').innerHTML = 'Fehler beim Laden: ' + error.message; return; }
-            
             let h = '<table class="data-table"><tr><th>Lfd.</th><th>Typ</th><th>Straße</th><th>Stadt</th><th>Kaufpreis</th><th>qm</th><th>Zimmer</th><th>Etage</th><th>Kaltmiete</th><th>Warmmiete</th><th>Bankrate</th><th>Hausgeld</th><th>Umlagef.</th><th>N. Umlagef.</th><th>Z. Strom</th><th>Z. Wasser</th><th>Z. Gas</th><th>Baujahr</th><th>EEK</th><th>Heizung</th><th>Letzte Reno.</th><th>Parteien</th><th>Mieter seit</th><th>Stellplatz</th><th>Grundsteuer</th><th>Versicherung</th><th>Sonstiges</th></tr>';
-            
             data.forEach(i => {
                 const val = (v) => (v === null || v === undefined || v === '') ? '-' : v;
                 h += `<tr><td><b>${val(i.lfd_nr)}</b></td><td><b>${val(i.typ)}</b></td><td>${val(i.strasse)}</td><td>${val(i.stadt)}</td><td style="color:var(--sap-blue); font-weight:bold;">${val(i.kaufpreis)} €</td><td>${val(i.quadratmeter)}</td><td>${val(i.zimmer)}</td><td>${val(i.etage)}</td><td>${val(i.kaltmiete)} €</td><td>${val(i.warmmiete)} €</td><td style="color:red;">${val(i.bankrate)} €</td><td>${val(i.hausgeld)} €</td><td style="color:green;">${val(i.hausgeld_umlagefaehig)} €</td><td style="color:red;">${val(i.hausgeld_nicht_umlagefaehig)} €</td><td>${val(i.zaehler_strom)}</td><td>${val(i.zaehler_wasser)}</td><td>${val(i.zaehler_gas)}</td><td>${val(i.baujahr)}</td><td>${val(i.energieeffizienzklasse)}</td><td>${val(i.heizungsart)}</td><td>${val(i.letzte_renovierung)}</td><td>${val(i.parteien_pro_haus)}</td><td>${val(i.mietverhaeltnis_seit)}</td><td>${val(i.stellplatz)} €</td><td>${val(i.grundsteuer)} €</td><td>${val(i.versicherungen)} €</td><td>${val(i.sonstiges)}</td></tr>`;
@@ -383,37 +315,92 @@
 
         async function saveBestand() {
             const obj = { lfd_nr: getSNull('ins_lfd'), typ: getSNull('ins_typ'), strasse: getSNull('ins_str'), stadt: getSNull('ins_stadt'), quadratmeter: getVNull('ins_qm'), etage: getSNull('ins_etage'), zimmer: getVNull('ins_zimmer'), kaufpreis: getVNull('ins_kp'), bankrate: getVNull('ins_bank'), kaltmiete: getVNull('ins_kalt'), warmmiete: getVNull('ins_warm'), mieteinnahmen: getVNull('ins_kalt'), hausgeld: getVNull('ins_hg'), hausgeld_umlagefaehig: getVNull('ins_um'), hausgeld_nicht_umlagefaehig: getVNull('ins_num'), zaehler_strom: getSNull('ins_z_strom'), zaehler_wasser: getSNull('ins_z_wasser'), zaehler_gas: getSNull('ins_z_gas'), baujahr: getVNull('ins_bj'), energieeffizienzklasse: getSNull('ins_eek'), letzte_renovierung: getVNull('ins_reno'), heizungsart: getSNull('ins_heiz'), parteien_pro_haus: getVNull('ins_parteien'), mietverhaeltnis_seit: getSNull('ins_seit'), stellplatz: getVNull('ins_stell'), grundsteuer: getVNull('ins_gs'), versicherungen: getVNull('ins_vs'), sonstiges: getSNull('ins_sonst') };
-
             const { error } = await supabaseClient.from('immobilien').insert([obj]);
             if(error) { alert("Fehler beim Speichern: " + error.message); } 
-            else {
-                document.getElementById('save-msg').style.display = 'block';
-                setTimeout(() => document.getElementById('save-msg').style.display = 'none', 3000);
-                document.querySelectorAll('#neu-immo-form input, #neu-immo-form textarea').forEach(el => el.value = '');
-                loadBestand();
-            }
+            else { document.getElementById('save-msg').style.display = 'block'; setTimeout(() => document.getElementById('save-msg').style.display = 'none', 3000); document.querySelectorAll('#neu-immo-form input, #neu-immo-form textarea').forEach(el => el.value = ''); loadBestand(); }
         }
 
         // ==========================================
-        // FIX & FLIP RECHNER
+        // FIX & FLIP RECHNER (MIT AUTO-GEWERKEN)
         // ==========================================
+        function updateRenoSpecs() {
+            const qm = getV('ff_qm');
+            const elek = document.getElementById('ff_elek');
+            const boden = document.getElementById('ff_boden');
+            const wand = document.getElementById('ff_wand');
+            
+            // Wände & Decken Formel: 32 Euro * 3,6 * qm
+            if(elek && boden && wand) {
+                elek.value = qm * 110;
+                boden.value = qm * 70;
+                wand.value = Math.round(qm * 32 * 3.6);
+            }
+        }
+
         function renderFixFlip(container) {
             container.innerHTML = `
-                <h2>Fix & Flip Kalkulator</h2>
+                <h2>Fix & Flip Kalkulator (Auto-Gewerke)</h2>
                 <div class="rechner-grid">
-                    <div class="section-box"><h3>1. Ankauf</h3><label>Kaufpreis (€)</label><input type="number" id="ff_kp" value="150000" oninput="calcFF()"><label>Wohnfläche (qm)</label><input type="number" id="ff_qm" value="70" oninput="calcFF()"><label>Notar & Grundbuch (%)</label><input type="number" id="ff_notar" value="1.5" step="0.1" oninput="calcFF()"><label>Makler (%)</label><input type="number" id="ff_makler" value="3.57" step="0.01" oninput="calcFF()"><label>Bundesland (GrESt %)</label><select id="ff_land" onchange="calcFF()"><option value="5.0">Rheinland-Pfalz / BW (5,0%)</option><option value="6.0">Hessen (6,0%)</option><option value="6.5">NRW (6,5%)</option><option value="3.5">Bayern (3,5%)</option></select></div>
-                    <div class="section-box"><h3>2. Finanzierung</h3><label>Projektdauer (Monate)</label><input type="number" id="ff_mon" value="6" oninput="calcFF()"><label>Finanzierungshöhe (%)</label><input type="number" id="ff_fin_p" value="100" oninput="calcFF()"><label>Zins p.a. (%)</label><input type="number" id="ff_zins" value="6.0" step="0.1" oninput="calcFF()"><label>Bearbeitungsgebühr (%)</label><input type="number" id="ff_geb" value="1.0" step="0.1" oninput="calcFF()"></div>
-                    <div class="section-box"><h3>3. Renovierung</h3><label>Entrümpelung (€)</label><input type="number" id="ff_ent" value="3000" oninput="calcFF()"><label>Renovierung (€)</label><input type="number" id="ff_ren" value="20000" oninput="calcFF()"><label>Küche (€)</label><input type="number" id="ff_kue" value="0" oninput="calcFF()"><label>Sonstiges (€)</label><input type="number" id="ff_sonst" value="0" oninput="calcFF()"><label>Sicherheitspuffer (%)</label><input type="number" id="ff_puf" value="10" oninput="calcFF()"></div>
-                    <div class="section-box"><h3>4. Laufende Kosten & Verkauf</h3><label>Hausgeld mtl. (€)</label><input type="number" id="ff_hg" value="200" oninput="calcFF()"><label>Strom/Heizung mtl. (€)</label><input type="number" id="ff_sh" value="50" oninput="calcFF()"><hr><label>Verkaufspreis <b>Gering</b> (€/qm)</label><input type="number" id="ff_vk_min" value="3500" oninput="calcFF()"><label>Verkaufspreis <b>Hoch</b> (€/qm)</label><input type="number" id="ff_vk_max" value="4000" oninput="calcFF()"></div>
+                    <div class="section-box">
+                        <h3>1. Ankauf</h3>
+                        <label>Kaufpreis (€)</label><input type="number" id="ff_kp" value="150000" oninput="calcFF()">
+                        <label>Wohnfläche (qm) <i>(Berechnet Gewerke neu!)</i></label><input type="number" id="ff_qm" value="70" oninput="updateRenoSpecs(); calcFF()">
+                        <label>Notar & Grundbuch (%)</label><input type="number" id="ff_notar" value="1.5" step="0.1" oninput="calcFF()">
+                        <label>Makler (%)</label><input type="number" id="ff_makler" value="3.57" step="0.01" oninput="calcFF()">
+                        <label>Bundesland (GrESt %)</label>
+                        <select id="ff_land" onchange="calcFF()">
+                            <option value="5.0">Rheinland-Pfalz / BW (5,0%)</option>
+                            <option value="6.0">Hessen (6,0%)</option>
+                            <option value="6.5">NRW (6,5%)</option>
+                            <option value="3.5">Bayern (3,5%)</option>
+                        </select>
+                    </div>
+                    <div class="section-box">
+                        <h3>2. Finanzierung</h3>
+                        <label>Projektdauer (Monate)</label><input type="number" id="ff_mon" value="6" oninput="calcFF()">
+                        <label>Finanzierungshöhe (%)</label><input type="number" id="ff_fin_p" value="100" oninput="calcFF()">
+                        <label>Zins p.a. (%)</label><input type="number" id="ff_zins" value="6.0" step="0.1" oninput="calcFF()">
+                        <label>Bearbeitungsgebühr (%)</label><input type="number" id="ff_geb" value="1.0" step="0.1" oninput="calcFF()">
+                    </div>
+                    <div class="section-box">
+                        <h3>3. Sanierung (Gewerke)</h3>
+                        <label>Badausstattung</label>
+                        <select id="ff_bad" onchange="calcFF()">
+                            <option value="0">Kein neues Bad (0 €)</option>
+                            <option value="6000">Einfach (6.000 €)</option>
+                            <option value="8000" selected>Mittel (8.000 €)</option>
+                            <option value="12000">Gehoben (12.000 €)</option>
+                        </select>
+                        <label>Elektrik (110 €/qm) - €</label><input type="number" id="ff_elek" oninput="calcFF()">
+                        <label>Boden (70 €/qm) - €</label><input type="number" id="ff_boden" oninput="calcFF()">
+                        <label>Wände/Decken (32€ * 3,6 * qm) - €</label><input type="number" id="ff_wand" oninput="calcFF()">
+                        <label>Küche (€)</label><input type="number" id="ff_kue" value="0" oninput="calcFF()">
+                        <label>Sonstiges / Entrümpelung (€)</label><input type="number" id="ff_sonst" value="3000" oninput="calcFF()">
+                        <label>Sicherheitspuffer (%)</label><input type="number" id="ff_puf" value="10" oninput="calcFF()">
+                    </div>
+                    <div class="section-box">
+                        <h3>4. Laufende Kosten & Verkauf</h3>
+                        <label>Hausgeld mtl. (€)</label><input type="number" id="ff_hg" value="200" oninput="calcFF()">
+                        <label>Strom/Heizung mtl. (€)</label><input type="number" id="ff_sh" value="50" oninput="calcFF()">
+                        <hr>
+                        <label>Verkaufspreis <b>Gering</b> (€/qm)</label><input type="number" id="ff_vk_min" value="3500" oninput="calcFF()">
+                        <label>Verkaufspreis <b>Hoch</b> (€/qm)</label><input type="number" id="ff_vk_max" value="4000" oninput="calcFF()">
+                    </div>
                 </div>
                 <div id="ff_res" class="result-panel"></div>
             `;
+            // Initiale Berechnung der Gewerke auf Basis der 70qm Standardwert aufrufen
+            updateRenoSpecs();
             calcFF();
         }
 
         function calcFF() {
             const kp = getV('ff_kp'); const nk_p = (getV('ff_land') + getV('ff_notar') + getV('ff_makler')) / 100; const ankaufGesamt = kp + (kp * nk_p);
-            const renoBase = getV('ff_ent') + getV('ff_ren') + getV('ff_kue') + getV('ff_sonst'); const renoGesamt = renoBase * (1 + (getV('ff_puf')/100));
+            
+            // Neue Berechnung: Bad + Elektrik + Boden + Wand + Küche + Sonstiges
+            const renoBase = getV('ff_bad') + getV('ff_elek') + getV('ff_boden') + getV('ff_wand') + getV('ff_kue') + getV('ff_sonst'); 
+            const renoGesamt = renoBase * (1 + (getV('ff_puf')/100));
+            
             const kredit = (ankaufGesamt + renoGesamt) * (getV('ff_fin_p')/100); const zinsKosten = kredit * (getV('ff_zins')/100) * (getV('ff_mon')/12);
             const gebuehren = kredit * (getV('ff_geb')/100); const finKosten = zinsKosten + gebuehren;
             const nkGesamt = (getV('ff_hg') + getV('ff_sh')) * getV('ff_mon'); const totalInvest = ankaufGesamt + renoGesamt + finKosten + nkGesamt;
