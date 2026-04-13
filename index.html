@@ -8,12 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --sap-blue: #0070f2;
-            --sap-bg: #edeff0;
-            --card-bg: #ffffff;
-            --sap-shell: #354a5f;
-            --text-color: #32363a;
-            --border-color: #d9d9d9;
+            --sap-blue: #0070f2; --sap-bg: #edeff0; --card-bg: #ffffff;
+            --sap-shell: #354a5f; --text-color: #32363a; --border-color: #d9d9d9;
         }
 
         body { background-color: var(--sap-bg); font-family: Arial, sans-serif; margin: 0; padding: 0; color: var(--text-color); }
@@ -32,14 +28,14 @@
         header { background: var(--sap-shell); height: 48px; display: flex; align-items: center; padding: 0 20px; color: white; justify-content: space-between; }
         .header-logo { height: 32px; filter: brightness(0) invert(1); }
 
-        .launchpad { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
+        .launchpad { padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; max-width: 1300px; margin: 0 auto; }
         .tile { background: var(--card-bg); padding: 16px; height: 130px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.2s; text-decoration: none; color: inherit; }
         .tile:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-bottom: 4px solid var(--sap-blue); }
         .tile h3 { font-size: 0.95rem; margin: 0; color: var(--sap-blue); font-weight: bold; }
         .tile-icon { font-size: 2rem; align-self: flex-end; opacity: 0.8; }
 
         /* APP CONTAINER */
-        #app-container { display: none; padding: 20px; max-width: 1100px; margin: 20px auto; }
+        #app-container { display: none; padding: 20px; max-width: 1200px; margin: 20px auto; }
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
         .rechner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
@@ -51,6 +47,11 @@
         
         .result-panel { background: #eef6ff; padding: 20px; border-radius: 6px; text-align: center; border-left: 5px solid var(--sap-blue); margin-top: 15px; font-size: 1.1rem; }
         .btn-action { background: var(--sap-blue); color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
+
+        /* TABELLEN */
+        .data-table { width: 100%; border-collapse: collapse; white-space: nowrap; font-size: 0.85rem; }
+        .data-table th { background: var(--sap-blue); color: white; padding: 10px; text-align: left; }
+        .data-table td { padding: 8px; border-bottom: 1px solid #ddd; background: white; }
 
         /* PRINT AREA */
         #print-area { display: none; }
@@ -72,7 +73,7 @@
             <input type="text" id="user" placeholder="E-Mail / Benutzer">
             <input type="password" id="pass" placeholder="Passwort">
             <button onclick="checkLogin()">Einloggen</button>
-            <p id="login-err" style="color:red; display:none; margin-top:15px; font-weight:bold; font-size: 0.85rem;">Fehlerhafte Zugangsdaten.</p>
+            <p id="login-err" style="color:red; display:none; margin-top:15px; font-weight:bold; font-size: 0.85rem;">Zugriff verweigert.</p>
         </div>
     </div>
 
@@ -89,25 +90,27 @@
         </header>
 
         <div id="launchpad" class="launchpad">
-            <a href="https://versteigerungspool.de/amtsgerichte/ludwigshafen.34341" target="_blank" class="tile"><h3>ZVG Ludwigshafen</h3><div class="tile-icon">🏛️</div></a>
-            <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Frankenthal</h3><div class="tile-icon">🏛️</div></a>
-            <a href="https://versteigerungspool.de/amtsgerichte/mannheim.2739/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG Mannheim</h3><div class="tile-icon">🏛️</div></a>
+            <a href="https://mail.zoho.eu/" target="_blank" class="tile"><h3>Business E-Mail</h3><div class="tile-icon">📧</div></a>
+            <a href="https://www.icloud.com/iclouddrive/" target="_blank" class="tile"><h3>iCloud Drive</h3><div class="tile-icon">☁️</div></a>
             <a href="https://baufinanzierung.check24.de/baufinanzierung/immobilienbewertung?deviceoutput=desktop" target="_blank" class="tile"><h3>Immo-Bewertung</h3><div class="tile-icon">📈</div></a>
-            
-            <a href="https://web.de" target="_blank" class="tile"><h3>E-Mail Postfach</h3><div class="tile-icon">📧</div></a>
+            <a href="https://versteigerungspool.de/amtsgerichte/ludwigshafen.34341" target="_blank" class="tile"><h3>ZVG LU</h3><div class="tile-icon">🏛️</div></a>
+            <a href="https://versteigerungspool.de/amtsgerichte/frankenthal.2742/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG FT</h3><div class="tile-icon">🏛️</div></a>
+            <a href="https://versteigerungspool.de/amtsgerichte/mannheim.2739/zwangsversteigerungen" target="_blank" class="tile"><h3>ZVG MA</h3><div class="tile-icon">🏛️</div></a>
 
+            <div class="tile" onclick="openApp('projekte')"><h3>Projektplanung</h3><div class="tile-icon">🎯</div></div>
+            <div class="tile" onclick="openApp('kalender')"><h3>Team Kalender</h3><div class="tile-icon">📅</div></div>
+            <div class="tile" onclick="openApp('bestand')"><h3>Immobilienbestand</h3><div class="tile-icon">🏢</div></div>
             <div class="tile" onclick="openApp('fixflip')"><h3>Fix & Flip Rechner</h3><div class="tile-icon">🛠️</div></div>
             <div class="tile" onclick="openApp('kredit')"><h3>Kreditrechner</h3><div class="tile-icon">💶</div></div>
             <div class="tile" onclick="openApp('miete')"><h3>Mietrechner</h3><div class="tile-icon">📊</div></div>
             <div class="tile" onclick="openApp('steuer')"><h3>Steuer-Rechner</h3><div class="tile-icon">💰</div></div>
-            <div class="tile" onclick="openApp('bestand')"><h3>Immobilienbestand</h3><div class="tile-icon">🏢</div></div>
-            <div class="tile" onclick="openApp('brief')"><h3>Brief-Generator</h3><div class="tile-icon">✉️</div></div>
             <div class="tile" onclick="openApp('checklisten')"><h3>Übergabeprotokoll</h3><div class="tile-icon">📋</div></div>
+            <div class="tile" onclick="openApp('brief')"><h3>Brief-Generator</h3><div class="tile-icon">✉️</div></div>
             <div class="tile" id="admin-tile" onclick="openApp('admin')" style="display:none; border: 1px solid red;"><h3>User-Verwaltung</h3><div class="tile-icon">⚙️</div></div>
         </div>
 
         <div id="app-container">
-            <button class="no-print" style="margin-bottom:15px; padding:10px 15px; cursor:pointer; background:#eee; border:1px solid #ccc; border-radius:4px;" onclick="closeApp()">⬅ Zurück</button>
+            <button class="no-print" style="margin-bottom:15px; padding:10px 15px; cursor:pointer; background:#eee; border:1px solid #ccc; border-radius:4px;" onclick="closeApp()">⬅ Zurück zum Menü</button>
             <div id="app-content" class="card"></div>
         </div>
     </div>
@@ -115,7 +118,11 @@
     <div id="print-area"></div>
 
     <script>
-        // --- INITIALISIERUNG ---
+        // --- LOKALER SPEICHER FÜR NEUE APPS (SIMULATION) ---
+        let lokaleProjekte = [];
+        let lokaleTermine = [];
+
+        // --- INITIALISIERUNG SUPABASE ---
         let supabaseClient = null;
         try {
             supabaseClient = window.supabase.createClient('https://dofofjbjgbmpxjtlolzi.supabase.co', 'sb_publishable_grgVSWN2j2zPAWGq_-qUug_yzc0QGV-');
@@ -128,9 +135,9 @@
             const box = document.getElementById('loginBox');
             const err = document.getElementById('login-err');
 
-            // Admin Shortcut
-            if (u === 'admin' && p === 'admin') {
-                showMainUI('admin', true);
+            // NEUER Admin Login
+            if (u === 'admin44321' && p === 'hzre-lkurt-321a') {
+                showMainUI('System Admin', true);
                 return;
             }
 
@@ -142,7 +149,7 @@
                 err.style.display = 'block';
                 err.innerText = "Zugang verweigert.";
             } else {
-                showMainUI(data.user.email, data.user.email.includes('admin'));
+                showMainUI(data.user.email, false);
             }
         }
 
@@ -162,13 +169,15 @@
             const content = document.getElementById('app-content');
             content.innerHTML = '';
 
+            if(id === 'projekte') renderProjekte(content);
+            if(id === 'kalender') renderKalender(content);
+            if(id === 'bestand') renderBestand(content);
             if(id === 'fixflip') renderFixFlip(content);
             if(id === 'kredit') renderKredit(content);
             if(id === 'miete') renderMietrechner(content);
             if(id === 'steuer') renderSteuer(content);
-            if(id === 'bestand') renderBestand(content);
-            if(id === 'brief') renderBrief(content);
             if(id === 'checklisten') renderChecklisten(content);
+            if(id === 'brief') renderBrief(content);
             if(id === 'admin') renderAdmin(content);
         }
 
@@ -178,420 +187,336 @@
         }
 
         const getV = (id) => parseFloat(document.getElementById(id).value) || 0;
+        const getS = (id) => document.getElementById(id).value || '';
+
+        function toggleDisplay(id, arrowId) {
+            const el = document.getElementById(id);
+            const arrow = document.getElementById(arrowId);
+            if(el.style.display === 'none') { el.style.display = 'block'; arrow.innerText = '▲'; }
+            else { el.style.display = 'none'; arrow.innerText = '▼'; }
+        }
 
         // ==========================================
-        // 1. KREDITRECHNER (Baufi24 Logik)
+        // NEU: PROJEKTPLANUNG
         // ==========================================
-        function renderKredit(container) {
+        function renderProjekte(container) {
             container.innerHTML = `
-                <h2>Profi Kredit- & Baufinanzierungsrechner</h2>
+                <h2>Projektplanung Pipeline</h2>
+                <div class="section-box" style="background:#eef6ff; border-color:var(--sap-blue);">
+                    <h3 style="cursor:pointer; display:flex; justify-content:space-between;" onclick="toggleDisplay('proj-form', 'arr-proj')">
+                        ➕ Neues Projekt erfassen <span id="arr-proj">▼</span>
+                    </h3>
+                    <div id="proj-form" style="display:none; margin-top:15px;">
+                        <div class="rechner-grid">
+                            <div class="section-box">
+                                <h4>Immobilie</h4>
+                                <input type="text" id="p_adr" placeholder="Adresse">
+                                <input type="text" id="p_stadt" placeholder="Stadt">
+                                <input type="number" id="p_qm" placeholder="Fläche (qm)">
+                                <input type="number" id="p_bj" placeholder="Baujahr">
+                                <select id="p_verm"><option value="Nein">Leerstehend</option><option value="Ja">Vermietet</option></select>
+                            </div>
+                            <div class="section-box">
+                                <h4>Einkauf & Planung</h4>
+                                <input type="number" id="p_vw" placeholder="Verkehrswert (€)">
+                                <input type="number" id="p_zkp" placeholder="Zielkaufpreis (€)">
+                                <input type="number" id="p_wg" placeholder="Wertgrenze / Limit (€)">
+                                <input type="number" id="p_auf" placeholder="Gesamtaufwand Sanierung/NK (€)">
+                                <label>Ziel Termin</label><input type="date" id="p_termin">
+                            </div>
+                            <div class="section-box">
+                                <h4>Exit Strategie (Verkauf)</h4>
+                                <input type="number" id="p_vmin" placeholder="Verkaufspreis Min. (€)">
+                                <input type="number" id="p_vmit" placeholder="Verkaufspreis Mittel (€)">
+                                <input type="number" id="p_vmax" placeholder="Verkaufspreis Max. (€)">
+                            </div>
+                        </div>
+                        <button class="btn-action" onclick="saveProjekt()" style="background:green;">Projekt speichern</button>
+                    </div>
+                </div>
+                <div style="overflow-x:auto; margin-top:20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <table class="data-table" id="proj-table"></table>
+                </div>
+            `;
+            updateProjektTable();
+        }
+
+        function saveProjekt() {
+            const zkp = getV('p_zkp');
+            const aufwand = getV('p_auf');
+            const invest = zkp + aufwand;
+            
+            const calcMarge = (vk) => vk > 0 ? ((vk - invest) / vk * 100).toFixed(1) : 0;
+
+            const proj = {
+                adr: getS('p_adr'), stadt: getS('p_stadt'), vw: getV('p_vw'), zkp: zkp, wg: getV('p_wg'),
+                termin: getS('p_termin'), qm: getV('p_qm'), bj: getV('p_bj'), verm: getS('p_verm'), auf: aufwand,
+                vmin: getV('p_vmin'), vmit: getV('p_vmit'), vmax: getV('p_vmax'),
+                mmin: calcMarge(getV('p_vmin')), mmit: calcMarge(getV('p_vmit')), mmax: calcMarge(getV('p_vmax'))
+            };
+            lokaleProjekte.push(proj);
+            document.querySelectorAll('#proj-form input').forEach(el => el.value = '');
+            updateProjektTable();
+        }
+
+        function updateProjektTable() {
+            let h = `<tr><th>Adresse</th><th>Stadt</th><th>Verkehrswert</th><th>Ziel-KP</th><th>Limit</th><th>Termin</th><th>QM</th><th>BJ</th><th>Vermietet</th><th>Aufwand</th><th>VK (Min)</th><th>VK (Mittel)</th><th>VK (Max)</th><th>Marge Min</th><th>Marge Mittel</th><th>Marge Max</th></tr>`;
+            lokaleProjekte.forEach(p => {
+                h += `<tr>
+                    <td><b>${p.adr}</b></td><td>${p.stadt}</td><td>${p.vw} €</td><td>${p.zkp} €</td><td>${p.wg} €</td><td>${p.termin}</td>
+                    <td>${p.qm}</td><td>${p.bj}</td><td>${p.verm}</td><td>${p.auf} €</td>
+                    <td>${p.vmin} €</td><td>${p.vmit} €</td><td>${p.vmax} €</td>
+                    <td style="color:${p.mmin >= 20 ? 'green' : 'red'}; font-weight:bold;">${p.mmin} %</td>
+                    <td style="color:${p.mmit >= 20 ? 'green' : 'red'}; font-weight:bold;">${p.mmit} %</td>
+                    <td style="color:${p.mmax >= 20 ? 'green' : 'red'}; font-weight:bold;">${p.mmax} %</td>
+                </tr>`;
+            });
+            document.getElementById('proj-table').innerHTML = h;
+        }
+
+        // ==========================================
+        // NEU: KALENDER
+        // ==========================================
+        function renderKalender(container) {
+            container.innerHTML = `
+                <h2>Team Kalender & Termine</h2>
                 <div class="rechner-grid">
-                    <div class="section-box">
-                        <h3>Darlehensdaten</h3>
-                        <label>Darlehensbetrag (€)</label><input type="number" id="kr_d" value="200000" oninput="calcKr()">
-                        <label>Sollzins p.a. (%)</label><input type="number" id="kr_z" value="3.5" step="0.1" oninput="calcKr()">
+                    <div class="section-box" style="background:#eef6ff;">
+                        <h3>Neuen Termin eintragen</h3>
+                        <input type="date" id="k_datum">
+                        <input type="time" id="k_zeit">
+                        <input type="text" id="k_mitarbeiter" placeholder="Mitarbeiter / Zuständiger">
+                        <input type="text" id="k_titel" placeholder="Thema / Ort">
+                        <button class="btn-action" onclick="saveTermin()">Termin hinzufügen</button>
                     </div>
-                    <div class="section-box">
-                        <h3>Tilgung & Laufzeit</h3>
-                        <label>Anfängliche Tilgung p.a. (%)</label><input type="number" id="kr_t" value="2.0" step="0.1" oninput="calcKr()">
-                        <label>Zinsbindung (Jahre)</label><input type="number" id="kr_j" value="10" oninput="calcKr()">
+                    <div class="section-box" style="overflow-y:auto; max-height:400px;">
+                        <h3>Anstehende Termine</h3>
+                        <div id="kalender-liste"></div>
                     </div>
                 </div>
-                <div id="kr_res" class="result-panel"></div>
             `;
-            calcKr();
+            updateKalender();
         }
 
-        function calcKr() {
-            const K0 = getV('kr_d');
-            const zins_pa = getV('kr_z') / 100;
-            const tilg_pa = getV('kr_t') / 100;
-            const jahre = getV('kr_j');
+        function saveTermin() {
+            const t = { date: getS('k_datum'), time: getS('k_zeit'), person: getS('k_mitarbeiter'), title: getS('k_titel') };
+            if(t.date && t.title) { lokaleTermine.push(t); updateKalender(); }
+        }
 
-            // Monatliche Annuität (Rate) berechnen
-            const annuitaet_pa = K0 * (zins_pa + tilg_pa);
-            const rate_mtl = annuitaet_pa / 12;
-
-            // Restschuld Formel für Annuitätendarlehen
-            const i = zins_pa / 12; // Monatlicher Zins
-            const m = jahre * 12;   // Laufzeit in Monaten
-            
-            let restschuld = 0;
-            if (i > 0) {
-                // Bankübliche Restschuldformel: K_m = K_0 * (1+i)^m - R * ((1+i)^m - 1) / i
-                restschuld = K0 * Math.pow(1 + i, m) - rate_mtl * ((Math.pow(1 + i, m) - 1) / i);
-            } else {
-                restschuld = K0 - (rate_mtl * m);
-            }
-            if(restschuld < 0) restschuld = 0;
-
-            document.getElementById('kr_res').innerHTML = `
-                Monatliche Rate: <b style="font-size:1.4rem;">${rate_mtl.toFixed(2)} €</b><br><br>
-                Restschuld nach ${jahre} Jahren: <b style="color:var(--sap-blue);">${restschuld.toFixed(2)} €</b>
-            `;
+        function updateKalender() {
+            // Nach Datum sortieren
+            lokaleTermine.sort((a, b) => new Date(a.date) - new Date(b.date));
+            let h = '';
+            lokaleTermine.forEach(t => {
+                h += `<div style="padding:10px; border-bottom:1px solid #ccc; background:white; margin-bottom:5px; border-left:4px solid var(--sap-blue);">
+                    <b style="color:var(--sap-blue);">${new Date(t.date).toLocaleDateString('de-DE')} - ${t.time} Uhr</b><br>
+                    ${t.title} <br><small style="color:#666;">Zuständig: ${t.person}</small>
+                </div>`;
+            });
+            document.getElementById('kalender-liste').innerHTML = h || '<p>Keine Termine vorhanden.</p>';
         }
 
         // ==========================================
-        // 2. MIETRECHNER (Echter Cashflow)
+        // IMMOBILIENBESTAND (Erweitert um Kaufpreis, Zähler, Lfd, Typ)
         // ==========================================
-        function renderMietrechner(container) {
-            container.innerHTML = `
-                <h2>Cashflow-Rechner für Vermieter</h2>
-                <div class="rechner-grid">
-                    <div class="section-box">
-                        <h3>Einnahmen & Finanzierung</h3>
-                        <label>Kaltmiete (€ / Monat)</label><input type="number" id="m_k" value="800" oninput="calcM()">
-                        <label>Bankrate Annuität (€ / Monat)</label><input type="number" id="m_b" value="400" oninput="calcM()">
-                    </div>
-                    <div class="section-box">
-                        <h3>Laufende Kosten (mtl.)</h3>
-                        <label>Hausgeld gesamt (€)</label><input type="number" id="m_hg" value="250" oninput="calcM()">
-                        <label>davon auf Mieter umlagefähig (€)</label><input type="number" id="m_um" value="180" oninput="calcM()">
-                        <label>Hausverwaltung (€)</label><input type="number" id="m_hv" value="25" oninput="calcM()">
-                        <label>Mietausfallversicherung (€)</label><input type="number" id="m_mv" value="15" oninput="calcM()">
-                    </div>
-                </div>
-                <div id="m_res" class="result-panel"></div>
-            `;
-            calcM();
-        }
-
-        function calcM() {
-            const miete = getV('m_k');
-            const bank = getV('m_b');
-            const nicht_umlagefaehig = getV('m_hg') - getV('m_um');
-            const hv = getV('m_hv');
-            const mv = getV('m_mv');
-            
-            const cashflow = miete - bank - nicht_umlagefaehig - hv - mv;
-            
-            document.getElementById('m_res').innerHTML = `
-                <div style="font-size:0.9rem; margin-bottom:10px;">
-                    Dein Anteil am Hausgeld (n. umlagefähig): ${nicht_umlagefaehig.toFixed(2)} €<br>
-                    Sonstige Kosten (HV + Vers.): ${(hv + mv).toFixed(2)} €
-                </div>
-                Reiner Cashflow (Vor Steuern): <b style="font-size:1.4rem; color:${cashflow >= 0 ? 'green' : 'red'};">${cashflow.toFixed(2)} €</b> pro Monat
-            `;
-        }
-
-        // ==========================================
-        // 3. FIX & FLIP RECHNER
-        // ==========================================
-        function renderFixFlip(container) {
-            container.innerHTML = `
-                <h2>Fix & Flip Profi-Rechner</h2>
-                <div class="rechner-grid">
-                    <div class="section-box">
-                        <h3>1. Ankauf</h3>
-                        <label>Kaufpreis (€)</label><input type="number" id="ff_kp" value="150000" oninput="calcFF()">
-                        <label>Wohnfläche (qm)</label><input type="number" id="ff_qm" value="70" oninput="calcFF()">
-                        <label>Makler (%)</label><input type="number" id="ff_makler" value="3.57" oninput="calcFF()">
-                        <label>Notar & Grundbuch (%)</label><input type="number" id="ff_notar" value="1.5" readonly>
-                        <label>Bundesland</label>
-                        <select id="ff_land" onchange="calcFF()">
-                            <option value="5">Rheinland-Pfalz / BW (5%)</option>
-                            <option value="6">Hessen (6%)</option>
-                            <option value="6.5">NRW (6.5%)</option>
-                            <option value="3.5">Bayern (3,5%)</option>
-                        </select>
-                    </div>
-                    <div class="section-box">
-                        <h3>2. Finanzierung</h3>
-                        <label>Dauer (Monate)</label><input type="number" id="ff_mon" value="6" oninput="calcFF()">
-                        <label>Finanzierungshöhe (%)</label><input type="number" id="ff_fin_p" value="100" oninput="calcFF()">
-                        <label>Zins p.a. (%)</label><input type="number" id="ff_zins" value="6.0" oninput="calcFF()">
-                        <label>Bearbeitungsgebühr (%)</label><input type="number" id="ff_geb" value="1.0" oninput="calcFF()">
-                    </div>
-                    <div class="section-box">
-                        <h3>3. Sanierung</h3>
-                        <label>Entrümpelung (€)</label><input type="number" id="ff_ent" value="3000" oninput="calcFF()">
-                        <label>Renovierung (€)</label><input type="number" id="ff_ren" value="20000" oninput="calcFF()">
-                        <label>Küche (€)</label><input type="number" id="ff_kue" value="0" oninput="calcFF()">
-                        <label>Puffer (%)</label><input type="number" id="ff_puf" value="10" oninput="calcFF()">
-                    </div>
-                    <div class="section-box">
-                        <h3>4. Laufende Kosten & Verkauf</h3>
-                        <label>Hausgeld (€/mtl.)</label><input type="number" id="ff_hg" value="200" oninput="calcFF()">
-                        <label>Strom/Heizung (€/mtl.)</label><input type="number" id="ff_sh" value="50" oninput="calcFF()">
-                        <hr>
-                        <label>Ziel VK-Preis (€/qm)</label><input type="number" id="ff_vkqm" value="3800" oninput="calcFF()">
-                    </div>
-                </div>
-                <div id="ff_res" class="result-panel"></div>
-            `;
-            calcFF();
-        }
-
-        function calcFF() {
-            const kp = getV('ff_kp');
-            const nk_p = (getV('ff_land') + 1.5 + getV('ff_makler')) / 100;
-            const ankaufGesamt = kp * (1 + nk_p);
-            
-            const renoBase = getV('ff_ent') + getV('ff_ren') + getV('ff_kue');
-            const renoGesamt = renoBase * (1 + getV('ff_puf')/100);
-            
-            const kredit = (ankaufGesamt + renoGesamt) * (getV('ff_fin_p')/100);
-            const finKosten = (kredit * (getV('ff_zins')/100) * (getV('ff_mon')/12)) + (kredit * (getV('ff_geb')/100));
-            
-            const nkGesamt = (getV('ff_hg') + getV('ff_sh')) * getV('ff_mon');
-            const totalInvest = ankaufGesamt + renoGesamt + finKosten + nkGesamt;
-            
-            const vk = getV('ff_vkqm') * getV('ff_qm');
-            const profit = vk - totalInvest;
-            const marge = vk > 0 ? (profit / vk) * 100 : 0;
-
-            const res = document.getElementById('ff_res');
-            res.innerHTML = `Projektgewinn: <b>${profit.toLocaleString()} €</b> (Marge vom VK: ${marge.toFixed(1)}%)<br><small>Investition gesamt: ${totalInvest.toLocaleString()} €</small>`;
-            
-            if(marge >= 25) { res.style.background = "#d4edda"; res.style.borderLeftColor = "green"; }
-            else if(marge >= 20) { res.style.background = "#fff3cd"; res.style.borderLeftColor = "orange"; }
-            else { res.style.background = "#f8d7da"; res.style.borderLeftColor = "red"; }
-        }
-
-        // --- 4. STEUER RECHNER ---
-        function renderSteuer(container) {
-            container.innerHTML = `
-                <h2>Steuererstattung Immobilie</h2>
-                <div class="section-box" style="max-width: 500px; margin: auto;">
-                    <label>Bruttolohn Jahr (€)</label><input type="number" id="st_brutto" value="60000" oninput="calcST()">
-                    <label>Kaufpreis (€)</label><input type="number" id="st_kp" value="200000" oninput="calcST()">
-                    <label>Zinsen mtl. (€)</label><input type="number" id="st_zins" value="600" oninput="calcST()">
-                    <p><small>Pauschale Annahme: 80% Gebäudeanteil | 2% AfA</small></p>
-                </div>
-                <div id="st_res" class="result-panel"></div>
-            `;
-            calcST();
-        }
-
-        function calcST() {
-            const afa = (getV('st_kp') * 0.8) * 0.02;
-            const zins = getV('st_zins') * 12;
-            const werbungskosten = afa + zins;
-            const steuersatz = getV('st_brutto') > 60000 ? 0.42 : 0.30;
-            const erstattung = werbungskosten * steuersatz;
-            document.getElementById('st_res').innerHTML = `Geschätzte Erstattung p.a.: <b>${erstattung.toFixed(2)} €</b>`;
-        }
-
-        // --- 5. BESTAND (Tabelle mit Scrollen) ---
         async function renderBestand(container) {
             container.innerHTML = `
                 <h2>Immobilienbestand & Verwaltung</h2>
                 <div class="section-box" style="background:#eef6ff; border-color:var(--sap-blue);">
-                    <h3 style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="toggleForm()">
+                    <h3 style="cursor:pointer; display:flex; justify-content:space-between;" onclick="toggleDisplay('neu-immo-form', 'form-arrow')">
                         ➕ Neue Immobilie anlegen <span id="form-arrow">▼</span>
                     </h3>
-                    
                     <div id="neu-immo-form" style="display:none; margin-top:15px;">
                         <div class="rechner-grid">
                             <div class="section-box">
-                                <h4>📍 Basisdaten</h4>
+                                <h4>📍 Identifikation & Basis</h4>
+                                <input type="text" id="ins_lfd" placeholder="Lfd. Nr. (z.B. 01)">
+                                <select id="ins_typ"><option value="F">F - Fix & Flip</option><option value="M">M - Vermietet</option><option value="E">E - Eigennutzung</option></select>
                                 <input type="text" id="ins_str" placeholder="Straße & Hausnr.">
                                 <input type="text" id="ins_stadt" placeholder="Stadt">
                                 <input type="number" id="ins_qm" placeholder="Fläche (qm)">
-                                <input type="text" id="ins_etage" placeholder="Etage (z.B. 1. OG)">
                                 <input type="number" id="ins_zimmer" placeholder="Zimmer">
                             </div>
                             <div class="section-box">
-                                <h4>💶 Finanzen (mtl.)</h4>
+                                <h4>💶 Kauf & Finanzen</h4>
+                                <input type="number" id="ins_kp" placeholder="Kaufpreis (€)">
                                 <input type="number" id="ins_kalt" placeholder="Kaltmiete (€)">
                                 <input type="number" id="ins_warm" placeholder="Warmmiete (€)">
                                 <input type="number" id="ins_bank" placeholder="Bankrate (€)">
-                                <input type="number" id="ins_hg" placeholder="Hausgeld gesamt (€)">
-                                <input type="number" id="ins_um" placeholder="davon umlagefähig (€)">
-                                <input type="number" id="ins_num" placeholder="nicht umlagefähig (€)">
+                                <input type="number" id="ins_hg" placeholder="Hausgeld (€)">
                             </div>
                             <div class="section-box">
-                                <h4>🏢 Gebäudeinfos</h4>
+                                <h4>⚙️ Zähler & Anschlüsse</h4>
+                                <input type="text" id="ins_z_strom" placeholder="Zählernummer Strom">
+                                <input type="text" id="ins_z_wasser" placeholder="Zählernummer Wasser">
+                                <input type="text" id="ins_z_gas" placeholder="Zählernummer Gas">
+                                <input type="text" id="ins_heiz" placeholder="Heizungsart">
+                            </div>
+                            <div class="section-box">
+                                <h4>📋 Sonstiges</h4>
                                 <input type="number" id="ins_bj" placeholder="Baujahr">
-                                <input type="text" id="ins_eek" placeholder="Energieklasse (z.B. B)">
-                                <input type="number" id="ins_reno" placeholder="Letzte Renovierung (Jahr)">
-                                <input type="text" id="ins_heiz" placeholder="Heizung (z.B. Gas, WP)">
-                                <input type="number" id="ins_parteien" placeholder="Parteien im Haus">
-                            </div>
-                            <div class="section-box">
-                                <h4>📋 Sonstiges & NK</h4>
-                                <label>Mietverhältnis seit:</label>
-                                <input type="date" id="ins_seit">
-                                <input type="number" id="ins_stell" placeholder="Stellplatz Miete (€)">
-                                <input type="number" id="ins_gs" placeholder="Grundsteuer mtl. (€)">
-                                <input type="number" id="ins_vs" placeholder="Versicherungen mtl. (€)">
-                                <textarea id="ins_sonst" placeholder="Sonstiges (z.B. Möbel)" style="height:60px;"></textarea>
+                                <input type="text" id="ins_eek" placeholder="Energieeffizienz">
+                                <textarea id="ins_sonst" placeholder="Sonstige Notizen..." style="height:60px;"></textarea>
                             </div>
                         </div>
-                        <button class="btn-action" onclick="saveBestand()" style="background:green;">Immobilie speichern</button>
-                        <p id="save-msg" style="color:green; font-weight:bold; display:none; margin-top:10px;">Erfolgreich gespeichert!</p>
+                        <button class="btn-action" onclick="saveBestand()" style="background:green;">Speichern</button>
                     </div>
                 </div>
-
-                <div style="overflow-x:auto; background:white; padding:15px; border-radius:6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                    <div id="bestand_list">Lade Tabelle aus Datenbank...</div>
+                <div style="overflow-x:auto; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <div id="bestand_list">Lade Tabelle...</div>
                 </div>
             `;
             loadBestand();
         }
 
-        function toggleForm() {
-            const form = document.getElementById('neu-immo-form');
-            const arrow = document.getElementById('form-arrow');
-            if(form.style.display === 'none') { form.style.display = 'block'; arrow.innerText = '▲'; }
-            else { form.style.display = 'none'; arrow.innerText = '▼'; }
-        }
-
         async function loadBestand() {
             if(!supabaseClient) return;
             const { data, error } = await supabaseClient.from('immobilien').select('*');
-            if(error) { document.getElementById('bestand_list').innerHTML = 'Fehler beim Laden: ' + error.message; return; }
+            if(error) { document.getElementById('bestand_list').innerHTML = 'Fehler: ' + error.message; return; }
             
-            let h = '<table style="width:100%; border-collapse:collapse; white-space:nowrap; font-size:0.85rem;">';
-            h += `
-                <tr style="background:var(--sap-blue); color:white; text-align:left;">
-                    <th style="padding:10px;">Straße</th><th style="padding:10px;">Stadt</th>
-                    <th style="padding:10px;">qm</th><th style="padding:10px;">Zimmer</th><th style="padding:10px;">Etage</th>
-                    <th style="padding:10px;">Kaltmiete</th><th style="padding:10px;">Warmmiete</th><th style="padding:10px;">Bankrate</th>
-                    <th style="padding:10px;">Hausgeld</th><th style="padding:10px;">Umlagef.</th><th style="padding:10px;">N. Umlagef.</th>
-                    <th style="padding:10px;">Baujahr</th><th style="padding:10px;">EEK</th><th style="padding:10px;">Heizung</th><th style="padding:10px;">Letzte Reno.</th>
-                    <th style="padding:10px;">Parteien</th><th style="padding:10px;">Mieter seit</th><th style="padding:10px;">Stellplatz</th>
-                    <th style="padding:10px;">Grundsteuer</th><th style="padding:10px;">Versicherung</th><th style="padding:10px;">Sonstiges</th>
-                </tr>
-            `;
-            
+            let h = '<table class="data-table"><tr><th>ID</th><th>Typ</th><th>Straße</th><th>Stadt</th><th>Kaufpreis</th><th>qm</th><th>Miete</th><th>Hausgeld</th><th>Z. Strom</th><th>Z. Wasser</th><th>Z. Gas</th><th>Notizen</th></tr>';
             data.forEach(i => {
                 const val = (v) => (v === null || v === undefined || v === '') ? '-' : v;
-                h += `
-                <tr style="border-bottom:1px solid #ddd; background:white;">
-                    <td style="padding:8px;"><b>${val(i.strasse)}</b></td><td style="padding:8px;">${val(i.stadt)}</td>
-                    <td style="padding:8px;">${val(i.quadratmeter)}</td><td style="padding:8px;">${val(i.zimmer)}</td><td style="padding:8px;">${val(i.etage)}</td>
-                    <td style="padding:8px;">${val(i.kaltmiete)} €</td><td style="padding:8px;">${val(i.warmmiete)} €</td><td style="padding:8px; color:red;">${val(i.bankrate)} €</td>
-                    <td style="padding:8px;">${val(i.hausgeld)} €</td><td style="padding:8px; color:green;">${val(i.hausgeld_umlagefaehig)} €</td><td style="padding:8px; color:red;">${val(i.hausgeld_nicht_umlagefaehig)} €</td>
-                    <td style="padding:8px;">${val(i.baujahr)}</td><td style="padding:8px;">${val(i.energieeffizienzklasse)}</td><td style="padding:8px;">${val(i.heizungsart)}</td><td style="padding:8px;">${val(i.letzte_renovierung)}</td>
-                    <td style="padding:8px;">${val(i.parteien_pro_haus)}</td><td style="padding:8px;">${val(i.mietverhaeltnis_seit)}</td><td style="padding:8px;">${val(i.stellplatz)} €</td>
-                    <td style="padding:8px;">${val(i.grundsteuer)} €</td><td style="padding:8px;">${val(i.versicherungen)} €</td><td style="padding:8px;">${val(i.sonstiges)}</td>
+                h += `<tr>
+                    <td><b>${val(i.lfd_nr)}</b></td><td><b>${val(i.typ)}</b></td><td>${val(i.strasse)}</td><td>${val(i.stadt)}</td>
+                    <td style="color:var(--sap-blue);"><b>${val(i.kaufpreis)} €</b></td>
+                    <td>${val(i.quadratmeter)}</td><td>${val(i.kaltmiete)} €</td><td>${val(i.hausgeld)} €</td>
+                    <td>${val(i.zaehler_strom)}</td><td>${val(i.zaehler_wasser)}</td><td>${val(i.zaehler_gas)}</td>
+                    <td>${val(i.sonstiges)}</td>
                 </tr>`;
             });
             document.getElementById('bestand_list').innerHTML = h + '</table>';
         }
 
         async function saveBestand() {
-            const getNum = (id) => parseFloat(document.getElementById(id).value) || null;
-            const getStr = (id) => document.getElementById(id).value || null;
-
             const obj = { 
-                strasse: getStr('ins_str'), stadt: getStr('ins_stadt'), quadratmeter: getNum('ins_qm'),
-                etage: getStr('ins_etage'), zimmer: getNum('ins_zimmer'), bankrate: getNum('ins_bank'),
-                kaltmiete: getNum('ins_kalt'), warmmiete: getNum('ins_warm'), mieteinnahmen: getNum('ins_kalt'),
-                hausgeld: getNum('ins_hg'), hausgeld_umlagefaehig: getNum('ins_um'), hausgeld_nicht_umlagefaehig: getNum('ins_num'),
-                baujahr: getNum('ins_bj'), energieeffizienzklasse: getStr('ins_eek'), letzte_renovierung: getNum('ins_reno'),
-                heizungsart: getStr('ins_heiz'), parteien_pro_haus: getNum('ins_parteien'), mietverhaeltnis_seit: getStr('ins_seit') ? getStr('ins_seit') : null,
-                stellplatz: getNum('ins_stell'), grundsteuer: getNum('ins_gs'), versicherungen: getNum('ins_vs'), sonstiges: getStr('ins_sonst')
+                lfd_nr: getS('ins_lfd'), typ: getS('ins_typ'), strasse: getS('ins_str'), stadt: getS('ins_stadt'), 
+                quadratmeter: getV('ins_qm'), zimmer: getV('ins_zimmer'), kaufpreis: getV('ins_kp'), 
+                kaltmiete: getV('ins_kalt'), warmmiete: getV('ins_warm'), bankrate: getV('ins_bank'), 
+                hausgeld: getV('ins_hg'), zaehler_strom: getS('ins_z_strom'), zaehler_wasser: getS('ins_z_wasser'), 
+                zaehler_gas: getS('ins_z_gas'), heizungsart: getS('ins_heiz'), baujahr: getV('ins_bj'), 
+                energieeffizienzklasse: getS('ins_eek'), sonstiges: getS('ins_sonst')
             };
 
             const { error } = await supabaseClient.from('immobilien').insert([obj]);
-            if(error) alert("Fehler beim Speichern: " + error.message);
-            else {
-                document.getElementById('save-msg').style.display = 'block';
-                setTimeout(() => document.getElementById('save-msg').style.display = 'none', 3000);
-                document.querySelectorAll('#neu-immo-form input, #neu-immo-form textarea').forEach(el => el.value = '');
-                loadBestand();
-            }
+            if(error) alert("Speichern fehlgeschlagen. Hast du die SQL-Befehle (ALTER TABLE...) in Supabase ausgeführt?\n" + error.message);
+            else { loadBestand(); document.querySelectorAll('#neu-immo-form input').forEach(el => el.value = ''); }
         }
 
-        // --- 6. BRIEF GENERATOR ---
-        function renderBrief(container) {
-            container.innerHTML = `
-                <h2 class="no-print">Vermieter Brief</h2>
-                <div class="rechner-grid no-print">
-                    <div class="section-box">
-                        <h3>Absender</h3>
-                        <input type="text" id="b_v_n" placeholder="Dein Name">
-                        <input type="text" id="b_v_a" placeholder="Deine Adresse">
-                        <input type="text" id="b_v_o" placeholder="PLZ Stadt">
-                        <input type="text" id="b_v_t" placeholder="Telefon">
-                        <input type="text" id="b_v_e" placeholder="E-Mail">
-                    </div>
-                    <div class="section-box">
-                        <h3>Empfänger</h3>
-                        <input type="text" id="b_m_n" placeholder="Mieter Name">
-                        <input type="text" id="b_m_a" placeholder="Straße Nr.">
-                        <input type="text" id="b_m_o" placeholder="PLZ Stadt">
-                    </div>
-                </div>
-                <input type="text" id="b_bet" placeholder="Betreff" class="no-print">
-                <textarea id="b_txt" placeholder="Brieftext..." style="height:200px" class="no-print"></textarea>
-                <button class="btn-action no-print" onclick="printBrief()">Generieren & Drucken</button>
-            `;
-        }
-
-        function printBrief() {
-            const p = document.getElementById('print-area');
-            p.innerHTML = `
-                <div style="font-family:Arial; padding:40px;">
-                    <img src="IMG_4590.png" style="width:200px; margin-bottom:20px;">
-                    <div style="font-size:8pt; text-decoration:underline; margin-bottom:20px;">
-                        ${document.getElementById('b_v_n').value}, ${document.getElementById('b_v_a').value}, ${document.getElementById('b_v_o').value}
-                    </div>
-                    <div>${document.getElementById('b_m_n').value}<br>${document.getElementById('b_m_a').value}<br>${document.getElementById('b_m_o').value}</div>
-                    <div style="text-align:right; margin-top:40px;">Datum: ${new Date().toLocaleDateString()}</div>
-                    <div style="margin-top:40px; font-weight:bold; font-size:12pt;">${document.getElementById('b_bet').value}</div>
-                    <div style="margin-top:30px; white-space:pre-wrap;">${document.getElementById('b_txt').value}</div>
-                    <div style="margin-top:60px;">Mit freundlichen Grüßen,<br><br><br>____________________<br>${document.getElementById('b_v_n').value}</div>
-                </div>
-            `;
-            window.print();
-        }
-
-        // --- 7. CHECKLISTEN ---
+        // ==========================================
+        // ÜBERGABEPROTOKOLL (Doppelte Ausführung & Detailliert)
+        // ==========================================
         function renderChecklisten(container) {
             container.innerHTML = `
-                <h2>Übergabeprotokoll</h2>
-                <div class="section-box">
-                    <label>Vermieter Name</label><input type="text" id="cp_v" placeholder="Name">
-                    <label>Mieter Name</label><input type="text" id="cp_m" placeholder="Name">
-                    <label>Objekt Adresse</label><input type="text" id="cp_o" placeholder="Straße, Stadt">
+                <h2>Wohnungsübergabeprotokoll Generator</h2>
+                <div class="rechner-grid">
+                    <div class="section-box">
+                        <label>Vermieter Name</label><input type="text" id="cp_v">
+                        <label>Mieter Name</label><input type="text" id="cp_m">
+                        <label>Wohnung / Adresse</label><input type="text" id="cp_o">
+                    </div>
                 </div>
-                <button class="btn-action" onclick="printProt()">Protokoll (2-fach) drucken</button>
+                <button class="btn-action" onclick="printProt()">Protokoll erstellen (Mieter & Vermieter Kopie)</button>
             `;
         }
 
         function printProt() {
-            const v = document.getElementById('cp_v').value;
-            const m = document.getElementById('cp_m').value;
-            const o = document.getElementById('cp_o').value;
-            const template = `
-                <div style="font-family:Arial; padding:40px;">
-                    <img src="IMG_4590.png" style="width:150px;">
-                    <h2>Wohnungsübergabeprotokoll</h2>
-                    <p>Vermieter: ${v} | Mieter: ${m} | Objekt: ${o}</p>
-                    <hr>
-                    <h3>Zählerstände</h3>
-                    <p>Strom: __________ | Wasser: __________ | Heizung: __________</p>
-                    <h3>Mängel / Zustand</h3>
-                    <div style="height:300px; border:1px solid #ccc; padding:10px;">Notizen...</div>
-                    <div style="margin-top:50px; display:flex; justify-content:space-between;">
-                        <div>____________________<br>Unterschrift Vermieter</div>
-                        <div>____________________<br>Unterschrift Mieter</div>
+            const v = document.getElementById('cp_v').value || '_____________________';
+            const m = document.getElementById('cp_m').value || '_____________________';
+            const o = document.getElementById('cp_o').value || '_____________________';
+            const date = new Date().toLocaleDateString('de-DE');
+
+            const getTemplate = (kopieText) => `
+                <div style="font-family:Arial; font-size:10pt; padding:20px;">
+                    <img src="IMG_4590.png" style="width:150px; margin-bottom:10px;">
+                    <h2 style="margin-bottom:0;">Wohnungsübergabeprotokoll</h2>
+                    <p style="font-weight:bold; color:#555;">(${kopieText})</p>
+                    <table style="width:100%; margin-top:20px;">
+                        <tr><td><b>Vermieter:</b></td><td>${v}</td><td><b>Datum:</b></td><td>${date}</td></tr>
+                        <tr><td><b>Mieter:</b></td><td colspan="3">${m}</td></tr>
+                        <tr><td><b>Objekt:</b></td><td colspan="3">${o}</td></tr>
+                    </table>
+                    
+                    <h3 style="border-bottom: 1px solid #000; margin-top:20px;">1. Zählerstände</h3>
+                    <table style="width:100%; border-collapse: collapse;" border="1">
+                        <tr style="background:#f2f2f2;"><th style="padding:5px;">Art</th><th>Zählernummer</th><th>Zählerstand</th></tr>
+                        <tr><td style="padding:8px;">Strom</td><td></td><td></td></tr>
+                        <tr><td style="padding:8px;">Gas</td><td></td><td></td></tr>
+                        <tr><td style="padding:8px;">Heizung (Gesamt)</td><td></td><td></td></tr>
+                        <tr><td style="padding:8px;">Wasser (Warm)</td><td></td><td></td></tr>
+                        <tr><td style="padding:8px;">Wasser (Kalt)</td><td></td><td></td></tr>
+                    </table>
+
+                    <h3 style="border-bottom: 1px solid #000; margin-top:20px;">2. Schlüsselübergabe</h3>
+                    <p>Dem Mieter wurden heute folgende Schlüssel übergeben:</p>
+                    <table style="width:80%;">
+                        <tr><td>Haustürschlüssel:</td><td>______ Stück</td><td>Briefkastenschlüssel:</td><td>______ Stück</td></tr>
+                        <tr><td>Wohnungsschlüssel:</td><td>______ Stück</td><td>Kellerschlüssel:</td><td>______ Stück</td></tr>
+                        <tr><td>Sonstige:</td><td colspan="3">_________________________________________</td></tr>
+                    </table>
+
+                    <h3 style="border-bottom: 1px solid #000; margin-top:20px;">3. Mängel / Anmerkungen</h3>
+                    <div style="min-height: 150px; border:1px solid #eee; padding:10px;"></div>
+
+                    <div style="margin-top: 50px; display:flex; justify-content: space-between;">
+                        <div>______________________________<br>Unterschrift Vermieter</div>
+                        <div>______________________________<br>Unterschrift Mieter</div>
                     </div>
                 </div>
             `;
-            document.getElementById('print-area').innerHTML = template + '<div class="page-break"></div>' + template;
+
+            document.getElementById('print-area').innerHTML = getTemplate("Ausfertigung Vermieter") + '<div class="page-break"></div>' + getTemplate("Ausfertigung Mieter");
             window.print();
         }
 
-        // --- 8. ADMIN USER ---
-        function renderAdmin(container) {
-            container.innerHTML = `
-                <h2 style="color:red;">User-Verwaltung</h2>
-                <div class="section-box" style="border-color:red;">
-                    <input type="email" id="adm_e" placeholder="Neue E-Mail Adresse">
-                    <input type="text" id="adm_p" placeholder="Passwort (min. 6 Zeichen)">
-                    <button onclick="regUser()" style="background:red; color:white; border:none; padding:10px; cursor:pointer;">Neuen User anlegen</button>
-                    <p id="adm_msg"></p>
-                </div>
-            `;
+        // ==========================================
+        // WEITERE APPS (Kredit, Miete, Fix&Flip, Steuer, Brief, Admin)
+        // ==========================================
+        function renderFixFlip(c) {
+            c.innerHTML = `<h2>Fix & Flip kalkulieren</h2><div class="rechner-grid"><div class="section-box"><label>Kaufpreis</label><input type="number" id="f_kp" value="150000" oninput="calcFF()"><label>Notar+Makler+Steuer (%)</label><input type="number" id="f_nk" value="10" oninput="calcFF()"></div><div class="section-box"><label>Sanierung & Finanzen</label><input type="number" id="f_san" value="30000" oninput="calcFF()"></div><div class="section-box"><label>Verkauf</label><input type="number" id="f_vk" value="230000" oninput="calcFF()"></div></div><div id="f_r" class="result-panel"></div>`;
+            calcFF();
+        }
+        function calcFF() {
+            const invest = getV('f_kp') * (1 + getV('f_nk')/100) + getV('f_san');
+            const gewinn = getV('f_vk') - invest;
+            const marge = (gewinn / getV('f_vk')) * 100;
+            const res = document.getElementById('f_r');
+            res.innerHTML = `Gewinn: <b>${gewinn.toLocaleString()} €</b> (Marge: ${marge.toFixed(1)}%)`;
+            res.style.color = marge >= 20 ? 'green' : 'red';
         }
 
-        async function regUser() {
-            const { error } = await supabaseClient.auth.signUp({ email: document.getElementById('adm_e').value, password: document.getElementById('adm_p').value });
-            document.getElementById('adm_msg').innerText = error ? "Fehler: " + error.message : "Erfolg! User wurde in Supabase angelegt.";
+        function renderKredit(c) {
+            c.innerHTML = `<h2>Kreditrechner</h2><div class="section-box"><label>Darlehen</label><input type="number" id="kr_d" value="200000" oninput="calcKr()"><label>Zins + Tilgung (%)</label><input type="number" id="kr_z" value="4.0" oninput="calcKr()"></div><div id="kr_res" class="result-panel"></div>`;
+            calcKr();
+        }
+        function calcKr() { document.getElementById('kr_res').innerHTML = `Rate mtl.: <b>${((getV('kr_d') * getV('kr_z')/100)/12).toFixed(2)} €</b>`; }
+
+        function renderMietrechner(c) {
+            c.innerHTML = `<h2>Cashflow Miete</h2><div class="section-box"><label>Kaltmiete</label><input type="number" id="mk" value="800" oninput="calcM()"><label>Bankrate</label><input type="number" id="mb" value="500" oninput="calcM()"><label>Nicht umlagefähiges Hausgeld</label><input type="number" id="m_n" value="60" oninput="calcM()"></div><div id="m_r" class="result-panel"></div>`;
+            calcM();
+        }
+        function calcM() { document.getElementById('m_r').innerHTML = `Cashflow: <b>${(getV('mk') - getV('mb') - getV('m_n'))} €</b>`; }
+
+        function renderSteuer(c) {
+            c.innerHTML = `<h2>Steuer-Rückerstattung</h2><div class="section-box"><label>Kaufpreis</label><input type="number" id="st_kp" value="200000" oninput="calcST()"><label>Zinsen mtl.</label><input type="number" id="st_z" value="500" oninput="calcST()"></div><div id="st_r" class="result-panel"></div>`;
+            calcST();
+        }
+        function calcST() { document.getElementById('st_r').innerHTML = `Geschätzte Erstattung (bei 35% Steuersatz & 2% AfA): <b>${(((getV('st_kp')*0.8)*0.02 + getV('st_z')*12)*0.35).toFixed(2)} € p.a.</b>`; }
+
+        function renderBrief(c) {
+            c.innerHTML = `<div class="no-print"><h2>Brief Generator</h2><input type="text" id="bn" placeholder="Empfänger"><input type="text" id="bb" placeholder="Betreff"><textarea id="bt" style="height:150px;"></textarea><button class="btn-action" onclick="prtB()">Drucken</button></div>`;
+        }
+        function prtB() {
+            document.getElementById('print-area').innerHTML = `<div style="font-family:Arial; padding:40px;"><img src="IMG_4590.png" width="200"><div style="margin-top:50px;">${document.getElementById('bn').value}</div><h3 style="margin-top:40px;">${document.getElementById('bb').value}</h3><div style="margin-top:20px; white-space:pre-wrap;">${document.getElementById('bt').value}</div></div>`;
+            window.print();
+        }
+
+        function renderAdmin(c) {
+            c.innerHTML = `<h2>User Admin</h2><div class="section-box"><input type="email" id="ad_e" placeholder="Neue E-Mail"><input type="text" id="ad_p" placeholder="Passwort"><button onclick="regU()" style="background:red; color:white; padding:10px; cursor:pointer;">User anlegen</button><p id="ad_m"></p></div>`;
+        }
+        async function regU() {
+            const { error } = await supabaseClient.auth.signUp({ email: getS('ad_e'), password: getS('ad_p') });
+            document.getElementById('ad_m').innerText = error ? error.message : "Erfolgreich in Supabase angelegt!";
         }
     </script>
 </body>
